@@ -1,0 +1,60 @@
+"use client";
+
+import type { ChangeEvent } from "react";
+
+const quickExamples = [
+  "这个需求能不能别改了",
+  "今天不想上班",
+  "这个bug不是我写的",
+  "老板又在画饼",
+  "下班！",
+];
+
+interface TextInputProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export default function TextInput({ value, onChange }: TextInputProps) {
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const v = e.target.value;
+    if (v.length <= 100) {
+      onChange(v);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="text-[1.5rem] font-bold text-text-dark">说点什么吧 ✍️</h2>
+
+      <div className="mt-3 relative">
+        <textarea
+          value={value}
+          onChange={handleChange}
+          placeholder="输入你想表达的话，比如：这个需求能不能别改了..."
+          className="w-full resize-none rounded-xl border-2 border-border-light bg-card px-4 py-3 text-[1rem] leading-relaxed text-text-dark outline-none transition-all duration-200 placeholder:text-text-light focus:border-primary focus:ring-2 focus:ring-primary/20"
+          style={{ height: 120 }}
+          maxLength={100}
+        />
+        <span className="absolute bottom-3 right-4 text-[0.8rem] text-text-light">
+          {value.length}/100
+        </span>
+      </div>
+
+      <div className="mt-4">
+        <p className="mb-2 text-[0.85rem] text-text-muted">试试这些 👇</p>
+        <div className="flex flex-wrap gap-2">
+          {quickExamples.map((example) => (
+            <button
+              key={example}
+              onClick={() => onChange(example)}
+              className="inline-block rounded-full border-2 border-border bg-card px-3 py-1.5 text-[0.85rem] font-medium text-text-dark transition-all duration-200 hover:border-primary hover:bg-card-hover cursor-pointer"
+            >
+              {example}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

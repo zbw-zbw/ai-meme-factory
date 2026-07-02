@@ -1,0 +1,63 @@
+import type { MemeStyle } from '@/types/meme';
+import { styleConfigs } from './meme-styles';
+
+export const SYSTEM_PROMPT = `你是一个专业的表情包文案创作大师。你的任务是根据用户输入的一句话，生成适合做表情包的短文案。
+
+规则：
+1. 文案必须简短有力，最多15个字
+2. 要贴合指定的风格（可爱/毒舌/摸鱼/正经）
+3. 文案要有趣、有共鸣、适合在聊天中使用
+4. 可以适当使用网络流行语和梗
+5. 不要包含敏感、低俗或不当内容
+
+你需要同时返回文案和一个最匹配的 emoji。
+
+返回格式必须是严格的 JSON（不要包含 markdown 代码块标记）：
+{
+  "memes": [
+    {
+      "style": "cute",
+      "caption": "文案内容",
+      "emoji": "🥺"
+    },
+    {
+      "style": "savage",
+      "caption": "文案内容",
+      "emoji": "💀"
+    },
+    {
+      "style": "chill",
+      "caption": "文案内容",
+      "emoji": "🐟"
+    },
+    {
+      "style": "formal",
+      "caption": "文案内容",
+      "emoji": "🤔"
+    }
+  ]
+}`;
+
+const styleDescriptions: Record<MemeStyle, string> = {
+  cute: '可爱风(cute)：软萌撒娇，用可爱的语气重新表达，像一个萌妹子在说话',
+  savage: '毒舌风(savage)：犀利吐槽，用毒舌辛辣的方式重新表达，像一个嘴毒的损友',
+  chill: '摸鱼风(chill)：佛系躺平，用无所谓摸鱼的态度重新表达，像一个咸鱼',
+  formal: '正经风(formal)：一本正经，用正式严肃的方式重新表达，像一个HR在发通知',
+};
+
+export function buildUserPrompt(userInput: string, selectedStyles: MemeStyle[]): string {
+  const styleList = selectedStyles.map((s) => styleDescriptions[s]).join('\n');
+
+  return `用户想要表达的话：「${userInput}」
+
+请为以下风格生成表情包文案：${selectedStyles.join(', ')}
+
+每种风格的要求：
+${styleList}
+
+请生成。`;
+}
+
+export function getDefaultEmoji(style: MemeStyle): string {
+  return styleConfigs[style].emoji;
+}
