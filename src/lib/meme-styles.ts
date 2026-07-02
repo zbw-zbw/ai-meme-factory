@@ -1,4 +1,4 @@
-import type { MemeStyle, StyleConfig } from '@/types/meme';
+import type { MemeStyle, StyleConfig, IconName } from '@/types/meme';
 
 export const ALL_STYLES: MemeStyle[] = ['cute', 'savage', 'chill', 'formal'];
 
@@ -6,7 +6,7 @@ export const styleConfigs: Record<MemeStyle, StyleConfig> = {
   cute: {
     id: 'cute',
     name: '可爱风',
-    emoji: '🥺',
+    icon: 'heart',
     description: '软萌撒娇，让人心都化了',
     bgColor: '#FFF1F2',
     bgGradient: 'linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%)',
@@ -18,7 +18,7 @@ export const styleConfigs: Record<MemeStyle, StyleConfig> = {
   savage: {
     id: 'savage',
     name: '毒舌风',
-    emoji: '😑',
+    icon: 'fire',
     description: '犀利吐槽，嘴巴够毒',
     bgColor: '#1E293B',
     bgGradient: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
@@ -30,7 +30,7 @@ export const styleConfigs: Record<MemeStyle, StyleConfig> = {
   chill: {
     id: 'chill',
     name: '摸鱼风',
-    emoji: '🐟',
+    icon: 'fish',
     description: '佛系躺平，摸鱼万岁',
     bgColor: '#ECFEFF',
     bgGradient: 'linear-gradient(135deg, #ECFEFF 0%, #CFFAFE 100%)',
@@ -42,7 +42,7 @@ export const styleConfigs: Record<MemeStyle, StyleConfig> = {
   formal: {
     id: 'formal',
     name: '正经风',
-    emoji: '🤔',
+    icon: 'briefcase',
     description: '一本正经，认真回复',
     bgColor: '#F8FAFC',
     bgGradient: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
@@ -56,3 +56,11 @@ export const styleConfigs: Record<MemeStyle, StyleConfig> = {
 export function getStyleConfig(style: MemeStyle): StyleConfig {
   return styleConfigs[style];
 }
+
+// Map icon names to display in UI
+export const iconDisplayMap: Record<IconName, string> = {
+  heart: 'Heart',
+  fire: 'Fire',
+  fish: 'Fish',
+  briefcase: 'Briefcase',
+};

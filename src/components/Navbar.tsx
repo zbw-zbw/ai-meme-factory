@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { LogoIcon, MenuIcon, CloseIcon } from "@/components/Icons";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -22,8 +23,8 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1.5 no-underline">
-          <span className="text-2xl">😂</span>
+        <Link href="/" className="flex items-center gap-2 no-underline">
+          <LogoIcon className="h-7 w-7 text-primary-dark" />
           <span className="gradient-logo text-lg font-bold">AI表情包工厂</span>
         </Link>
 
@@ -46,12 +47,14 @@ export default function Navbar() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex flex-col gap-1 md:hidden"
+          className="flex items-center justify-center md:hidden"
           aria-label="切换菜单"
         >
-          <span className={`block h-0.5 w-5 bg-text-dark transition-transform duration-300 ${menuOpen ? "translate-y-1.5 rotate-45" : ""}`} />
-          <span className={`block h-0.5 w-5 bg-text-dark transition-opacity duration-300 ${menuOpen ? "opacity-0" : ""}`} />
-          <span className={`block h-0.5 w-5 bg-text-dark transition-transform duration-300 ${menuOpen ? "-translate-y-1.5 -rotate-45" : ""}`} />
+          {menuOpen ? (
+            <CloseIcon className="h-6 w-6 text-text-dark" />
+          ) : (
+            <MenuIcon className="h-6 w-6 text-text-dark" />
+          )}
         </button>
       </div>
 

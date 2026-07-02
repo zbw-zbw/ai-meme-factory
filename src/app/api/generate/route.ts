@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { MemeStyle } from '@/types/meme';
+import type { MemeStyle, IconName } from '@/types/meme';
 import { callDeepSeek, DeepSeekError, isApiKeyConfigured } from '@/lib/deepseek';
-import { SYSTEM_PROMPT, buildUserPrompt, getDefaultEmoji } from '@/lib/prompts';
+import { SYSTEM_PROMPT, buildUserPrompt, getDefaultIcon } from '@/lib/prompts';
 import { getMockCaption } from '@/lib/mock-data';
-import { styleConfigs } from '@/lib/meme-styles';
 
 const VALID_STYLES: MemeStyle[] = ['cute', 'savage', 'chill', 'formal'];
+const VALID_ICONS: IconName[] = ['heart', 'fire', 'fish', 'briefcase'];
 
 // ===== Rate Limiting (in-memory) =====
 const requestMap = new Map<string, number[]>();
@@ -49,7 +49,7 @@ interface RequestBody {
 interface MemeResult {
   style: MemeStyle;
   caption: string;
-  emoji: string;
+  icon: IconName;
 }
 
 interface ResponseBody {
@@ -100,7 +100,7 @@ function validateMemeResult(item: unknown, validStyles: MemeStyle[]): MemeResult
 
   const style = obj.style;
   const caption = obj.caption;
-  const emoji = obj.emoji;
+  const icon = obj.icon;
 
   if (typeof style !== 'string' || !VALID_STYLES.includes(style as MemeStyle)) {
     return null;
@@ -114,9 +114,16 @@ function validateMemeResult(item: unknown, validStyles: MemeStyle[]): MemeResult
 
   const validStyle = style as MemeStyle;
   const validCaption = caption.slice(0, 50); // Safety cap
-  const validEmoji = typeof emoji === 'string' && emoji.length > 0 ? emoji : getDefaultEmoji(validStyle);
 
-  return { style: validStyle, caption: validCaption, emoji: validEmoji };
+  // Validate icon field - must be one of the allowed values
+  let validIcon: IconName;
+  if (typeof icon === 'string' && VALID_ICONS.includes(icon as IconName)) {
+    validIcon = icon as IconName;
+  } else {
+    validIcon = getDefaultIcon(validStyle) as IconName;
+  }
+
+  return { style: validStyle, caption: validCaption, icon: validIcon };
 }
 
 // ===== Mock Fallback =====
@@ -127,7 +134,7 @@ function generateMockResults(text: string, styles: MemeStyle[]): MemeResult[] {
     return {
       style,
       caption: mock.caption,
-      emoji: mock.emoji,
+      icon: mock.icon,
     };
   });
 }
@@ -274,7 +281,7 @@ export async function POST(request: NextRequest) {
         validResults.push({
           style,
           caption: mock.caption,
-          emoji: mock.emoji,
+          icon: mock.icon,
         });
       }
     }

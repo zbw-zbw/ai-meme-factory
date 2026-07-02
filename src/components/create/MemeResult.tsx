@@ -3,6 +3,7 @@
 import type { MemeItem } from "@/types/meme";
 import { styleConfigs } from "@/lib/meme-styles";
 import { downloadMeme } from "@/lib/meme-renderer";
+import { DownloadIcon } from "@/components/Icons";
 import MemeCanvas from "./MemeCanvas";
 
 interface MemeResultProps {
@@ -31,9 +32,10 @@ export default function MemeResult({ item, index }: MemeResultProps) {
         </span>
         <button
           onClick={() => downloadMeme(item)}
-          className="inline-flex items-center gap-1 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
         >
-          💾 下载
+          <DownloadIcon className="h-4 w-4" />
+          下载
         </button>
       </div>
     </div>

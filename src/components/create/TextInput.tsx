@@ -1,6 +1,7 @@
 "use client";
 
 import type { ChangeEvent } from "react";
+import { PenIcon } from "@/components/Icons";
 
 const quickExamples = [
   "这个需求能不能别改了",
@@ -25,7 +26,10 @@ export default function TextInput({ value, onChange }: TextInputProps) {
 
   return (
     <div>
-      <h2 className="text-[1.5rem] font-bold text-text-dark">说点什么吧 ✍️</h2>
+      <h2 className="flex items-center gap-2 text-[1.5rem] font-bold text-text-dark">
+        <PenIcon className="h-6 w-6 text-primary-dark" />
+        说点什么吧
+      </h2>
 
       <div className="mt-3 relative">
         <textarea
@@ -42,7 +46,7 @@ export default function TextInput({ value, onChange }: TextInputProps) {
       </div>
 
       <div className="mt-4">
-        <p className="mb-2 text-[0.85rem] text-text-muted">试试这些 👇</p>
+        <p className="mb-2 text-[0.85rem] text-text-muted">试试这些</p>
         <div className="flex flex-wrap gap-2">
           {quickExamples.map((example) => (
             <button

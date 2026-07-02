@@ -8,9 +8,9 @@ import TextInput from "@/components/create/TextInput";
 import StyleSelector from "@/components/create/StyleSelector";
 import GenerateButton from "@/components/create/GenerateButton";
 import MemeResultGrid from "@/components/create/MemeResultGrid";
-import { renderMemeToCanvas, downloadMeme } from "@/lib/meme-renderer";
+import { renderMemeToCanvas, downloadMeme, saveToGallery } from "@/lib/meme-renderer";
 import { ALL_STYLES } from "@/lib/meme-styles";
-import type { MemeStyle, MemeItem, GenerateStatus } from "@/types/meme";
+import type { MemeStyle, MemeItem, GenerateStatus, IconName } from "@/types/meme";
 
 interface ApiResponse {
   success: boolean;
@@ -18,7 +18,7 @@ interface ApiResponse {
     memes: Array<{
       style: MemeStyle;
       caption: string;
-      emoji: string;
+      icon: IconName;
     }>;
     demoMode?: boolean;
   };
@@ -73,8 +73,13 @@ function CreatePageContent() {
 
       // Render each meme to Canvas
       const newResults: MemeItem[] = data.data.memes.map((meme) =>
-        renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.emoji),
+        renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.icon),
       );
+
+      // Save each result to gallery (localStorage)
+      newResults.forEach((item) => {
+        saveToGallery(item);
+      });
 
       setResults(newResults);
       setStatus("done");

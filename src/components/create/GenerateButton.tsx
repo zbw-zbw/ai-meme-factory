@@ -1,6 +1,7 @@
 "use client";
 
 import type { GenerateStatus } from "@/types/meme";
+import { SparklesIcon, RefreshIcon } from "@/components/Icons";
 
 interface GenerateButtonProps {
   status: GenerateStatus;
@@ -14,13 +15,26 @@ export default function GenerateButton({ status, canGenerate, onClick }: Generat
   const getLabel = () => {
     switch (status) {
       case "idle":
-        return "生成表情包 🎉";
+        return "生成表情包";
       case "generating":
         return "AI正在创作中...";
       case "done":
-        return "再来一组 🔄";
+        return "再来一组";
       case "error":
-        return "重试 🔄";
+        return "重试";
+    }
+  };
+
+  const getIcon = () => {
+    switch (status) {
+      case "idle":
+        return <SparklesIcon className="h-5 w-5" />;
+      case "done":
+        return <RefreshIcon className="h-5 w-5" />;
+      case "error":
+        return <RefreshIcon className="h-5 w-5" />;
+      default:
+        return null;
     }
   };
 
@@ -39,6 +53,7 @@ export default function GenerateButton({ status, canGenerate, onClick }: Generat
         {status === "generating" && (
           <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
         )}
+        {getIcon()}
         {getLabel()}
       </span>
     </button>

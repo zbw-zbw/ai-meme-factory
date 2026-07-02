@@ -1,11 +1,14 @@
-// 四种风格
+// Four styles
 export type MemeStyle = 'cute' | 'savage' | 'chill' | 'formal';
 
-// 风格配置
+// Icon identifiers (mapped to SVG components in UI, SVG path data in Canvas)
+export type IconName = 'heart' | 'fire' | 'fish' | 'briefcase';
+
+// Style configuration
 export interface StyleConfig {
   id: MemeStyle;
   name: string;
-  emoji: string;
+  icon: IconName;
   description: string;
   bgColor: string;
   bgGradient: string;
@@ -15,22 +18,29 @@ export interface StyleConfig {
   fontSize: number;
 }
 
-// 生成的表情包
+// Generated meme
 export interface MemeItem {
   id: string;
   style: MemeStyle;
   originalText: string;
   caption: string;
-  emoji: string;
+  icon: IconName;
   dataUrl: string;
   createdAt: number;
 }
 
-// 生成请求
+// Generate request
 export interface GenerateRequest {
   text: string;
   styles: MemeStyle[];
 }
 
-// 生成状态
+// Generate status
 export type GenerateStatus = 'idle' | 'generating' | 'done' | 'error';
+
+// API response meme (from server)
+export interface ApiMemeResult {
+  style: MemeStyle;
+  caption: string;
+  icon: IconName;
+}

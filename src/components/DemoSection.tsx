@@ -2,12 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import FadeInWrapper from "./FadeInWrapper";
+import {
+  StyleIcon,
+  EyeIcon,
+} from "@/components/Icons";
+import type { IconName } from "@/types/meme";
 
-const demoText = "这个需求能不能别改了 😫";
+const demoText = "这个需求能不能别改了";
 const typingSpeed = 80;
 
 interface MemeCardData {
-  emoji: string;
+  icon: IconName;
   text: string;
   label: string;
   bgClass: string;
@@ -16,11 +21,12 @@ interface MemeCardData {
   labelBgClass: string;
   borderClass?: string;
   fontWeight: string;
+  iconColor: string;
 }
 
 const memeCards: MemeCardData[] = [
   {
-    emoji: "🥺",
+    icon: "heart",
     text: "求求了别改了",
     label: "可爱风",
     bgClass: "bg-cute-bg",
@@ -28,19 +34,21 @@ const memeCards: MemeCardData[] = [
     textClass: "text-cute-accent",
     labelBgClass: "bg-cute-accent",
     fontWeight: "font-bold",
+    iconColor: "#FB7185",
   },
   {
-    emoji: "😑",
-    text: "改你🐴呢",
+    icon: "fire",
+    text: "改你个大头鬼",
     label: "毒舌风",
     bgClass: "bg-savage-bg",
     accentClass: "text-white",
     textClass: "text-white",
     labelBgClass: "bg-savage-accent",
     fontWeight: "font-black",
+    iconColor: "#F43F5E",
   },
   {
-    emoji: "🐟",
+    icon: "fish",
     text: "改不动了 先摸会儿",
     label: "摸鱼风",
     bgClass: "bg-chill-bg",
@@ -48,9 +56,10 @@ const memeCards: MemeCardData[] = [
     textClass: "text-chill-accent",
     labelBgClass: "bg-chill-accent",
     fontWeight: "font-medium",
+    iconColor: "#06B6D4",
   },
   {
-    emoji: "🤔",
+    icon: "briefcase",
     text: "建议需求评审后再变更",
     label: "正经风",
     bgClass: "bg-formal-bg",
@@ -59,6 +68,7 @@ const memeCards: MemeCardData[] = [
     labelBgClass: "bg-formal-accent",
     fontWeight: "font-medium",
     borderClass: "border border-[#E2E8F0]",
+    iconColor: "#475569",
   },
 ];
 
@@ -70,7 +80,7 @@ function MemeCard({ card, index }: { card: MemeCardData; index: number }) {
         animation: `slide-up 0.6s ease-out ${index * 0.2}s both`,
       }}
     >
-      <span className="text-[4rem] leading-none">{card.emoji}</span>
+      <StyleIcon name={card.icon} className="h-16 w-16" style={{ color: card.iconColor }} />
       <p className={`mt-3 ${card.textClass} ${card.fontWeight} text-center text-[1rem]`}>
         {card.text}
       </p>
@@ -127,7 +137,10 @@ export default function DemoSection() {
     <section id="demo-section" className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[1200px]">
         <FadeInWrapper className="mb-10 text-center">
-          <h2 className="text-[1.75rem] font-bold sm:text-[2rem]">看看它怎么工作 👀</h2>
+          <h2 className="flex items-center justify-center gap-2 text-[1.75rem] font-bold sm:text-[2rem]">
+            <EyeIcon className="h-6 w-6 text-primary-dark" />
+            看看它怎么工作
+          </h2>
         </FadeInWrapper>
 
         <FadeInWrapper>
