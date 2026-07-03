@@ -1,7 +1,7 @@
 "use client";
 
 import type { MemeItem, MemeStyle, GenerateStatus } from "@/types/meme";
-import type { ProgressPhase } from "@/app/create/page";
+import type { ProgressPhase } from "@/types/create";
 import { styleConfigs } from "@/lib/meme-styles";
 import MemeResult from "./MemeResult";
 import {

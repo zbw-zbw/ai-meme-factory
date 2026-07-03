@@ -8,9 +8,11 @@ import TextInput from "@/components/create/TextInput";
 import StyleSelector from "@/components/create/StyleSelector";
 import GenerateButton from "@/components/create/GenerateButton";
 import MemeResultGrid from "@/components/create/MemeResultGrid";
+import { ToastProvider, useToast } from "@/components/Toast";
 import { renderMemeToCanvas, downloadMeme, saveToGallery } from "@/lib/meme-renderer";
 import { ALL_STYLES } from "@/lib/meme-styles";
 import type { MemeStyle, MemeItem, GenerateStatus, IconName } from "@/types/meme";
+import type { ProgressPhase } from "@/types/create";
 
 interface ApiResponse {
   success: boolean;
@@ -28,10 +30,9 @@ interface ApiResponse {
   code?: string;
 }
 
-export type ProgressPhase = 'idle' | 'caption' | 'image' | 'render' | 'done' | 'error';
-
 function CreatePageContent() {
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
   const [inputText, setInputText] = useState("");
   const [selectedStyles, setSelectedStyles] = useState<MemeStyle[]>([...ALL_STYLES]);
   const [status, setStatus] = useState<GenerateStatus>("idle");
@@ -102,11 +103,27 @@ function CreatePageContent() {
     }
   }, [canGenerate, status, inputText, selectedStyles]);
 
+  // Ctrl+Enter / Cmd+Enter shortcut to trigger generation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        if (canGenerate && status !== "generating") {
+          e.preventDefault();
+          handleGenerate();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [canGenerate, status, handleGenerate]);
+
   const handleDownloadAll = useCallback(() => {
     results.forEach((item, i) => {
       setTimeout(() => downloadMeme(item), i * 300);
     });
-  }, [results]);
+    showToast("已开始下载", "success");
+  }, [results, showToast]);
 
   const handleCopyAll = useCallback(async () => {
     try {
@@ -117,22 +134,25 @@ function CreatePageContent() {
           new ClipboardItem({ [blob.type]: blob }),
         ]);
       }
+      showToast("已复制到剪贴板", "success");
     } catch {
       // Fallback: just copy the first one as data URL
       try {
         await navigator.clipboard.writeText(results[0]?.dataUrl || "");
+        showToast("已复制到剪贴板", "success");
       } catch {
         // Silently fail
       }
     }
-  }, [results]);
+  }, [results, showToast]);
 
   const handleClear = useCallback(() => {
     setResults([]);
     setStatus("idle");
     setProgressPhase("idle");
     setErrorMessage("");
-  }, []);
+    showToast("已清空", "info");
+  }, [showToast]);
 
   const handleRetry = useCallback(() => {
     setStatus("idle");
@@ -203,7 +223,9 @@ function CreatePageContent() {
 export default function CreatePage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-bg" />}>
-      <CreatePageContent />
+      <ToastProvider>
+        <CreatePageContent />
+      </ToastProvider>
     </Suspense>
   );
 }

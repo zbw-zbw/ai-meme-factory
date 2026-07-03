@@ -1,101 +1,92 @@
 "use client";
 
 import Link from "next/link";
-import FadeInWrapper from "./FadeInWrapper";
-import {
-  SparklesIcon,
-  HeartIcon,
-  FireIcon,
-  FishIcon,
-  BriefcaseIcon,
-} from "@/components/Icons";
+import { SparklesIcon, ImageIcon } from "@/components/Icons";
 
-const floatingIcons = [
-  { Icon: HeartIcon, top: "18%", left: "8%", delay: "0s", size: 32, color: "#FB7185" },
-  { Icon: FireIcon, top: "12%", right: "10%", delay: "0.5s", size: 28, color: "#F43F5E" },
-  { Icon: BriefcaseIcon, bottom: "25%", left: "12%", delay: "1s", size: 24, color: "#475569" },
-  { Icon: FishIcon, top: "22%", right: "15%", delay: "1.5s", size: 28, color: "#06B6D4" },
-  { Icon: SparklesIcon, bottom: "30%", right: "8%", delay: "0.8s", size: 24, color: "#FBBF24" },
-  { Icon: HeartIcon, bottom: "20%", left: "20%", delay: "1.2s", size: 28, color: "#EC4899" },
+/* Minimal floating decorations - just 3 subtle icons */
+const decorations = [
+  { Icon: SparklesIcon, top: "20%", left: "10%", delay: "0s", color: "#FBBF24", opacity: 0.35 },
+  { Icon: SparklesIcon, top: "15%", right: "12%", delay: "1.2s", color: "#EC4899", opacity: 0.25 },
+  { Icon: SparklesIcon, bottom: "25%", left: "18%", delay: "0.6s", color: "#F59E0B", opacity: 0.3 },
 ];
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden px-8 pb-16 pt-28 text-center md:px-6 md:pb-20 md:pt-32">
-      {/* Floating SVG decorations */}
-      {floatingIcons.map((item, i) => {
+    <section className="noise-bg relative flex min-h-[calc(100svh-64px)] flex-col items-center justify-center overflow-hidden px-6 pb-20 pt-24 md:px-8">
+      {/* Floating decorations - hidden on mobile for cleaner look */}
+      {decorations.map((item, i) => {
         const { Icon } = item;
         return (
           <span
             key={i}
-            className="pointer-events-none absolute hidden select-none sm:block"
+            className="pointer-events-none absolute hidden select-none md:block animate-float"
             style={{
-              ...(item.top ? { top: item.top } : {}),
-              ...(item.bottom ? { bottom: item.bottom } : {}),
-              ...(item.left ? { left: item.left } : {}),
-              ...(item.right ? { right: item.right } : {}),
-              animation: `float-emoji 3s ease-in-out ${item.delay} infinite`,
+              top: item.top,
+              left: item.left,
+              right: item.right,
+              animationDelay: item.delay,
             }}
           >
             <Icon
-              width={item.size}
-              height={item.size}
-              style={{ color: item.color, opacity: 0.5 }}
+              width={24}
+              height={24}
+              className="opacity-35"
+              style={{ color: item.color }}
             />
           </span>
         );
       })}
 
-      {/* Mobile: show only 3 icons */}
-      {floatingIcons.slice(0, 3).map((item, i) => {
-        const { Icon } = item;
-        return (
-          <span
-            key={`mobile-${i}`}
-            className="pointer-events-none absolute select-none sm:hidden"
-            style={{
-              ...(item.top ? { top: item.top } : {}),
-              ...(item.bottom ? { bottom: item.bottom } : {}),
-              ...(item.left ? { left: item.left } : {}),
-              ...(item.right ? { right: item.right } : {}),
-              animation: `float-emoji 3s ease-in-out ${item.delay} infinite`,
-            }}
-          >
-            <Icon
-              width={item.size * 0.8}
-              height={item.size * 0.8}
-              style={{ color: item.color, opacity: 0.5 }}
-            />
-          </span>
-        );
-      })}
-
-      <FadeInWrapper>
-        {/* Main title */}
-        <h1 className="gradient-title mb-4 text-[2.2rem] font-black leading-tight sm:text-[3.5rem]">
+      {/* Content with staggered entrance */}
+      <div className="relative z-10 flex flex-col items-center text-center">
+        {/* Title - display font */}
+        <h1
+          className="gradient-title mb-5 font-display text-[2.4rem] font-black leading-tight animate-slide-up sm:text-[3.6rem] md:text-[4.2rem]"
+          style={{ animationDelay: "0.1s" }}
+        >
           AI表情包工厂
         </h1>
 
         {/* Subtitle */}
-        <p className="mb-2 text-[1.2rem] font-medium text-text-muted sm:text-[1.5rem]">
+        <p
+          className="mb-2 text-[1.15rem] font-medium text-text-muted animate-slide-up sm:text-[1.4rem]"
+          style={{ animationDelay: "0.25s" }}
+        >
           你说话，AI画表情包
         </p>
 
         {/* Description */}
-        <p className="mb-8 text-[0.95rem] text-text-light sm:text-[1.1rem]">
+        <p
+          className="mb-10 max-w-md text-[0.95rem] leading-relaxed text-text-light animate-slide-up sm:text-[1.05rem]"
+          style={{ animationDelay: "0.4s" }}
+        >
           输入一句话，3秒生成4种风格专属表情包
         </p>
 
-        {/* CTA button */}
-        <Link
-          href="/create"
-          className="inline-flex items-center gap-2 animate-pulse-glow rounded-xl px-8 py-4 text-center text-[1.1rem] font-bold text-white transition-transform duration-200 hover:scale-105 no-underline sm:px-10 sm:text-[1.2rem]"
-          style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }}
+        {/* CTAs */}
+        <div
+          className="flex flex-col items-center gap-4 animate-slide-up sm:flex-row sm:gap-5"
+          style={{ animationDelay: "0.55s" }}
         >
-          <SparklesIcon className="h-5 w-5" />
-          开始制作
-        </Link>
-      </FadeInWrapper>
+          {/* Primary CTA */}
+          <Link
+            href="/create"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-center text-[1.05rem] font-bold text-white no-underline transition-colors hover:bg-primary-dark sm:px-10 sm:text-[1.15rem]"
+          >
+            <SparklesIcon className="h-5 w-5" />
+            开始制作
+          </Link>
+
+          {/* Secondary CTA - gallery link */}
+          <Link
+            href="/gallery"
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-border px-7 py-3.5 text-center text-[1.05rem] font-medium text-text-muted no-underline transition-colors hover:border-primary hover:text-text-dark sm:px-9 sm:text-[1.05rem]"
+          >
+            <ImageIcon className="h-5 w-5" />
+            浏览画廊
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }

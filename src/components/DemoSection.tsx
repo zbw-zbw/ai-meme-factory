@@ -1,11 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import FadeInWrapper from "./FadeInWrapper";
-import {
-  StyleIcon,
-  EyeIcon,
-} from "@/components/Icons";
+import { StyleIcon, EyeIcon } from "@/components/Icons";
 import type { IconName } from "@/types/meme";
 
 const demoText = "这个需求能不能别改了";
@@ -16,7 +13,6 @@ interface MemeCardData {
   text: string;
   label: string;
   bgClass: string;
-  accentClass: string;
   textClass: string;
   labelBgClass: string;
   borderClass?: string;
@@ -30,7 +26,6 @@ const memeCards: MemeCardData[] = [
     text: "求求了别改了",
     label: "可爱风",
     bgClass: "bg-cute-bg",
-    accentClass: "text-cute-accent",
     textClass: "text-cute-accent",
     labelBgClass: "bg-cute-accent",
     fontWeight: "font-bold",
@@ -41,7 +36,6 @@ const memeCards: MemeCardData[] = [
     text: "改你个大头鬼",
     label: "毒舌风",
     bgClass: "bg-savage-bg",
-    accentClass: "text-white",
     textClass: "text-white",
     labelBgClass: "bg-savage-accent",
     fontWeight: "font-black",
@@ -52,7 +46,6 @@ const memeCards: MemeCardData[] = [
     text: "改不动了 先摸会儿",
     label: "摸鱼风",
     bgClass: "bg-chill-bg",
-    accentClass: "text-chill-accent",
     textClass: "text-chill-accent",
     labelBgClass: "bg-chill-accent",
     fontWeight: "font-medium",
@@ -63,7 +56,6 @@ const memeCards: MemeCardData[] = [
     text: "建议需求评审后再变更",
     label: "正经风",
     bgClass: "bg-formal-bg",
-    accentClass: "text-formal-accent",
     textClass: "text-formal-accent",
     labelBgClass: "bg-formal-accent",
     fontWeight: "font-medium",
@@ -72,15 +64,20 @@ const memeCards: MemeCardData[] = [
   },
 ];
 
+/* Card delay classes for staggered entrance */
+const cardDelays = [
+  "animate-slide-up [animation-delay:0s]",
+  "animate-slide-up [animation-delay:0.15s]",
+  "animate-slide-up [animation-delay:0.3s]",
+  "animate-slide-up [animation-delay:0.45s]",
+];
+
 function MemeCard({ card, index }: { card: MemeCardData; index: number }) {
   return (
     <div
-      className={`${card.bgClass} ${card.borderClass ?? ""} flex flex-col items-center justify-center rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg`}
-      style={{
-        animation: `slide-up 0.6s ease-out ${index * 0.2}s both`,
-      }}
+      className={`${card.bgClass} ${card.borderClass ?? ""} flex flex-col items-center justify-center rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${cardDelays[index] ?? ""}`}
     >
-      <StyleIcon name={card.icon} className="h-16 w-16" style={{ color: card.iconColor }} />
+      <StyleIcon name={card.icon} className="h-14 w-14" style={{ color: card.iconColor }} />
       <p className={`mt-3 ${card.textClass} ${card.fontWeight} text-center text-[1rem]`}>
         {card.text}
       </p>
@@ -99,6 +96,22 @@ export default function DemoSection() {
   const [showCards, setShowCards] = useState(false);
   const [btnActive, setBtnActive] = useState(false);
   const hasStarted = useRef(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startTyping = useCallback(() => {
+    let charIndex = 0;
+    intervalRef.current = setInterval(() => {
+      charIndex++;
+      setDisplayText(demoText.slice(0, charIndex));
+      if (charIndex >= demoText.length) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        setTypingDone(true);
+        setBtnActive(true);
+        setTimeout(() => setShowCards(true), 1000);
+      }
+    }, typingSpeed);
+  }, []);
 
   useEffect(() => {
     if (hasStarted.current) return;
@@ -117,27 +130,22 @@ export default function DemoSection() {
     const el = document.getElementById("demo-section");
     if (el) observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [startTyping]);
 
-  function startTyping() {
-    let charIndex = 0;
-    const interval = setInterval(() => {
-      charIndex++;
-      setDisplayText(demoText.slice(0, charIndex));
-      if (charIndex >= demoText.length) {
-        clearInterval(interval);
-        setTypingDone(true);
-        setBtnActive(true);
-        setTimeout(() => setShowCards(true), 1000);
+  /* Cleanup interval on unmount */
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
-    }, typingSpeed);
-  }
+    };
+  }, []);
 
   return (
     <section id="demo-section" className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[1200px]">
         <FadeInWrapper className="mb-10 text-center">
-          <h2 className="flex items-center justify-center gap-2 text-[1.75rem] font-bold sm:text-[2rem]">
+          <h2 className="flex items-center justify-center gap-2 font-display text-[1.75rem] font-bold sm:text-[2rem]">
             <EyeIcon className="h-6 w-6 text-primary-dark" />
             看看它怎么工作
           </h2>
@@ -146,30 +154,21 @@ export default function DemoSection() {
         <FadeInWrapper>
           <div className="rounded-2xl bg-card p-6 shadow-sm sm:p-8">
             {/* Simulated input */}
-            <div
-              className="flex items-center gap-3 rounded-xl border-2 border-border-light px-4 py-3 sm:px-5 sm:py-4"
-            >
+            <div className="flex items-center gap-3 rounded-xl border-2 border-border-light px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex-1 overflow-hidden">
                 <span className={`text-[0.95rem] sm:text-[1rem] ${displayText ? "text-text-dark" : "text-text-light"}`}>
                   {displayText || "在这里输入你想说的话..."}
                 </span>
                 {!typingDone && displayText && (
-                  <span
-                    className="ml-0.5 inline-block h-[1.1em] w-0 border-r-2 border-text-dark align-middle animate-blink"
-                  />
+                  <span className="ml-0.5 inline-block h-[1.1em] w-0 animate-blink border-r-2 border-text-dark align-middle" />
                 )}
               </div>
               <button
                 className={`shrink-0 rounded-xl px-5 py-2 text-[0.9rem] font-bold transition-all duration-300 no-underline ${
                   btnActive
-                    ? "text-white shadow-sm cursor-pointer"
+                    ? "bg-primary text-white shadow-sm cursor-pointer"
                     : "bg-border-light text-text-light cursor-default"
                 }`}
-                style={
-                  btnActive
-                    ? { background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }
-                    : {}
-                }
               >
                 生成
               </button>
@@ -177,7 +176,7 @@ export default function DemoSection() {
 
             {/* Meme cards result */}
             {showCards && (
-              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
                 {memeCards.map((card, i) => (
                   <MemeCard key={card.label} card={card} index={i} />
                 ))}

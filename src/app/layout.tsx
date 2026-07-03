@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Noto_Sans_SC } from "next/font/google";
+import { Noto_Sans_SC, ZCOOL_KuaiLe } from "next/font/google";
 import "./globals.css";
 
 const notoSansSC = Noto_Sans_SC({
   variable: "--font-noto-sans-sc",
   subsets: ["latin"],
   weight: ["400", "500", "700", "900"],
+  display: "swap",
+});
+
+const zcoolKuaiLe = ZCOOL_KuaiLe({
+  variable: "--font-zcool-kuaile",
+  weight: "400",
   display: "swap",
 });
 
@@ -27,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`${notoSansSC.variable} antialiased`}>
+    <html lang="zh-CN" className={`${notoSansSC.variable} ${zcoolKuaiLe.variable} antialiased`}>
       <body className="min-h-screen font-sans bg-bg text-text-dark">{children}</body>
     </html>
   );

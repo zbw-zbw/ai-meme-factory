@@ -1,7 +1,7 @@
 "use client";
 
 import type { GenerateStatus } from "@/types/meme";
-import type { ProgressPhase } from "@/app/create/page";
+import type { ProgressPhase } from "@/types/create";
 import { SparklesIcon, RefreshIcon } from "@/components/Icons";
 
 interface GenerateButtonProps {
@@ -36,7 +36,7 @@ export default function GenerateButton({ status, progressPhase, canGenerate, onC
       className={`mt-6 w-full rounded-xl px-6 py-3.5 text-[1rem] font-bold text-white transition-all duration-200 no-underline ${
         isDisabled
           ? "cursor-not-allowed opacity-50"
-          : "animate-pulse-glow cursor-pointer hover:scale-[1.02]"
+          : "cursor-pointer hover:scale-[1.02]"
       }`}
       style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }}
     >

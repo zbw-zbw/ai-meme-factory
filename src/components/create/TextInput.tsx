@@ -1,6 +1,6 @@
 "use client";
 
-import type { ChangeEvent } from "react";
+import { useRef, useEffect, type ChangeEvent } from "react";
 import { PenIcon } from "@/components/Icons";
 
 const quickExamples = [
@@ -17,6 +17,17 @@ interface TextInputProps {
 }
 
 export default function TextInput({ value, onChange }: TextInputProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea based on content
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + "px";
+    }
+  }, [value]);
+
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const v = e.target.value;
     if (v.length <= 100) {
@@ -33,11 +44,11 @@ export default function TextInput({ value, onChange }: TextInputProps) {
 
       <div className="mt-3 relative">
         <textarea
+          ref={textareaRef}
           value={value}
           onChange={handleChange}
           placeholder="输入你想表达的话，比如：这个需求能不能别改了..."
-          className="w-full resize-none rounded-xl border-2 border-border-light bg-card px-4 py-3 text-[1rem] leading-relaxed text-text-dark outline-none transition-all duration-200 placeholder:text-text-light focus:border-primary focus:ring-2 focus:ring-primary/20"
-          style={{ height: 120 }}
+          className="w-full resize-none rounded-xl border-2 border-border-light bg-card px-4 py-3 text-[1rem] leading-relaxed text-text-dark outline-none transition-all duration-200 placeholder:text-text-light focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[100px]"
           maxLength={100}
         />
         <span className="absolute bottom-3 right-4 text-[0.8rem] text-text-light">
@@ -45,7 +56,11 @@ export default function TextInput({ value, onChange }: TextInputProps) {
         </span>
       </div>
 
-      <div className="mt-4">
+      <p className="mt-1.5 text-[0.75rem] text-text-light">
+        按 Ctrl+Enter 快速生成
+      </p>
+
+      <div className="mt-3">
         <p className="mb-2 text-[0.85rem] text-text-muted">试试这些</p>
         <div className="flex flex-wrap gap-2">
           {quickExamples.map((example) => (
