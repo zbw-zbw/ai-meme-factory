@@ -27,13 +27,13 @@ export default function CTAFooterSection() {
       </section>
 
       {/* Footer */}
-      <footer className="px-4 py-8 sm:px-6">
-        <div className="mx-auto max-w-[1200px]">
-          {/* Separator line */}
-          <div className="mb-6 h-px bg-border-light" />
-          {/* Centered brand line */}
-          <p className="text-center text-[0.85rem] text-text-light">
-            AI表情包工厂 · 让每一句话都有表情
+      <footer className="border-t border-border-light px-4 py-8 sm:px-6">
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-2">
+          <p className="font-display text-[0.95rem] text-text-muted">
+            AI表情包工厂
+          </p>
+          <p className="text-[0.8rem] text-text-light">
+            让每一句话都有表情 · 2026
           </p>
         </div>
       </footer>

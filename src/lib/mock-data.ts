@@ -38,6 +38,51 @@ const mockRules: MockRule[] = [
       formal: { caption: '已提交缺陷报告，待修复', icon: 'briefcase' },
     },
   },
+  {
+    keywords: ['下班', '回家', '走'],
+    results: {
+      cute: { caption: '好想回家呀', icon: 'fish' },
+      savage: { caption: '活还没干完你走什么走', icon: 'fire' },
+      chill: { caption: '到点了 先溜了', icon: 'fish' },
+      formal: { caption: '今日工作已圆满完成', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['周末', '休息', '放假'],
+    results: {
+      cute: { caption: '周末好开心鸭', icon: 'heart' },
+      savage: { caption: '放假也不让你消停', icon: 'fire' },
+      chill: { caption: '终于可以躺平了', icon: 'fish' },
+      formal: { caption: '祝您周末愉快', icon: 'heart' },
+    },
+  },
+  {
+    keywords: ['开会', '会议', '对齐'],
+    results: {
+      cute: { caption: '又开会呀呜呜', icon: 'heart' },
+      savage: { caption: '这个会能发邮件吗', icon: 'fire' },
+      chill: { caption: '开会摸鱼两不误', icon: 'fish' },
+      formal: { caption: '会议已安排 请准时参加', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['工资', '钱', '穷'],
+    results: {
+      cute: { caption: '有钱啦有钱啦', icon: 'heart' },
+      savage: { caption: '这点钱够干啥的', icon: 'fire' },
+      chill: { caption: '发了再说吧', icon: 'fish' },
+      formal: { caption: '薪资已发放 请查收', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['秃', '头秃', '头发'],
+    results: {
+      cute: { caption: '头发还在的 对吧', icon: 'heart' },
+      savage: { caption: '头秃了代码也没改好', icon: 'fire' },
+      chill: { caption: '秃了就戴帽子呗', icon: 'fish' },
+      formal: { caption: '建议关注工作生活平衡', icon: 'briefcase' },
+    },
+  },
 ];
 
 const defaultResults: Record<MemeStyle, MockResult> = {

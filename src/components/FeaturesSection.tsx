@@ -42,7 +42,7 @@ export default function FeaturesSection() {
               return (
                 <div
                   key={feature.title}
-                  className="flex flex-col items-center px-6 py-10 text-center md:py-12"
+                  className="flex flex-col items-center px-6 py-10 text-center transition-all duration-200 hover:-translate-y-1 hover:bg-card-hover/50 md:py-12"
                 >
                   <Icon className="mb-4 h-8 w-8 text-primary" />
                   <span className="font-display text-[0.85rem] text-text-light">

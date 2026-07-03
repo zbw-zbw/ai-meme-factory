@@ -19,7 +19,7 @@ import {
   SparklesIcon,
   SearchIcon,
 } from "@/components/Icons";
-import { ToastProvider, useToast } from "@/components/Toast";
+import { useToast } from "@/components/Toast";
 
 const ALL_STYLE_KEYS = Object.keys(styleConfigs) as MemeStyle[];
 
@@ -42,6 +42,7 @@ function GalleryContent() {
   const [filterStyle, setFilterStyle] = useState<MemeStyle | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showConfirmClear, setShowConfirmClear] = useState(false);
+  const [, setTick] = useState(0);
 
   const { showToast } = useToast();
 
@@ -50,17 +51,23 @@ function GalleryContent() {
     setLoaded(true);
   }, []);
 
+  // Auto-refresh relative time every 60 seconds
+  useEffect(() => {
+    const timer = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleDelete = useCallback((id: string) => {
     deleteGalleryItem(id);
     setItems(getGalleryItems());
-    showToast("已删除");
+    showToast("已删除", "success");
   }, [showToast]);
 
   const handleClear = useCallback(() => {
     clearGallery();
     setItems([]);
     setShowConfirmClear(false);
-    showToast("已清空全部");
+    showToast("已清空全部", "success");
   }, [showToast]);
 
   const handleDownload = useCallback((item: MemeItem) => {
@@ -232,6 +239,7 @@ function GalleryContent() {
                       src={item.dataUrl}
                       alt={item.caption}
                       className="aspect-square w-full object-cover"
+                      loading="lazy"
                     />
 
                     {/* Info bar */}
@@ -321,8 +329,6 @@ function GalleryContent() {
 
 export default function GalleryPage() {
   return (
-    <ToastProvider>
-      <GalleryContent />
-    </ToastProvider>
+    <GalleryContent />
   );
 }

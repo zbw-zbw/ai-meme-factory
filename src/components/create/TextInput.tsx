@@ -15,16 +15,17 @@ const quickExamples = [
 interface TextInputProps {
   value: string;
   onChange: (value: string) => void;
+  refreshTrigger?: number;
 }
 
-export default function TextInput({ value, onChange }: TextInputProps) {
+export default function TextInput({ value, onChange, refreshTrigger }: TextInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [recentPrompts, setRecentPrompts] = useState<string[]>([]);
 
-  // Load recent prompts on mount
+  // Load recent prompts on mount and refresh when trigger changes
   useEffect(() => {
     setRecentPrompts(getRecentPrompts());
-  }, []);
+  }, [refreshTrigger]);
 
   // Auto-resize textarea based on content
   useEffect(() => {

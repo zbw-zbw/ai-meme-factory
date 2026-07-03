@@ -3,6 +3,7 @@
 import type { MemeItem, MemeStyle } from "@/types/meme";
 import { styleConfigs } from "@/lib/meme-styles";
 import { downloadMeme } from "@/lib/meme-renderer";
+import { useToast } from "@/components/Toast";
 import { DownloadIcon, CopyIcon, RefreshIcon } from "@/components/Icons";
 import MemeCanvas from "./MemeCanvas";
 
@@ -10,28 +11,38 @@ interface MemeResultProps {
   item: MemeItem;
   index: number;
   onRegenerate?: (style: MemeStyle) => void;
+  isRegenerating?: boolean;
 }
 
-export default function MemeResult({ item, index, onRegenerate }: MemeResultProps) {
+export default function MemeResult({ item, index, onRegenerate, isRegenerating }: MemeResultProps) {
   const config = styleConfigs[item.style];
+  const { showToast } = useToast();
 
   const handleCopy = async () => {
     try {
       const response = await fetch(item.dataUrl);
       const blob = await response.blob();
       await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      showToast("已复制到剪贴板");
     } catch {
-      // silently fail
+      showToast("复制失败", "error");
     }
   };
 
   return (
     <div
-      className="overflow-hidden rounded-2xl bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+      className="relative overflow-hidden rounded-2xl bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
       style={{ animation: `bounce-in 0.6s ease-out ${index * 0.15}s both` }}
     >
       {/* Image preview */}
       <MemeCanvas item={item} />
+
+      {/* Regenerating spinner overlay */}
+      {isRegenerating && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-2xl">
+          <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary border-t-transparent" />
+        </div>
+      )}
 
       {/* Bottom action bar */}
       <div className="flex items-center justify-between px-3 py-2.5">
@@ -45,7 +56,8 @@ export default function MemeResult({ item, index, onRegenerate }: MemeResultProp
           {onRegenerate && (
             <button
               onClick={() => onRegenerate(item.style)}
-              className="inline-flex items-center gap-1 rounded-lg bg-card-hover px-2 py-1 text-[0.7rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
+              disabled={isRegenerating}
+              className="inline-flex items-center gap-1 rounded-lg bg-card-hover px-2 py-1 text-[0.7rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               title="重新生成"
             >
               <RefreshIcon className="h-3.5 w-3.5" />

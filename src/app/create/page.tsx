@@ -8,8 +8,8 @@ import TextInput from "@/components/create/TextInput";
 import StyleSelector from "@/components/create/StyleSelector";
 import GenerateButton from "@/components/create/GenerateButton";
 import MemeResultGrid from "@/components/create/MemeResultGrid";
-import { ToastProvider, useToast } from "@/components/Toast";
-import { renderMemeToCanvas, downloadMeme, saveToGallery, saveBatchToGallery } from "@/lib/meme-renderer";
+import { useToast } from "@/components/Toast";
+import { renderMemeToCanvas, downloadMeme, saveToGallery, saveBatchToGallery, addRecentPrompt } from "@/lib/meme-renderer";
 import { ALL_STYLES, styleConfigs } from "@/lib/meme-styles";
 import type { MemeStyle, MemeItem, GenerateStatus, IconName } from "@/types/meme";
 import type { ProgressPhase } from "@/types/create";
@@ -40,6 +40,8 @@ function CreatePageContent() {
   const [results, setResults] = useState<MemeItem[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [demoMode, setDemoMode] = useState(false);
+  const [regeneratingStyle, setRegeneratingStyle] = useState<MemeStyle | null>(null);
+  const [generationCount, setGenerationCount] = useState(0);
 
   // Pre-fill from URL ?text= param
   useEffect(() => {
@@ -92,6 +94,8 @@ function CreatePageContent() {
 
       // Save all results to gallery (localStorage) in one batch write
       saveBatchToGallery(newResults);
+      addRecentPrompt(inputText.trim());
+      setGenerationCount(c => c + 1);
 
       setResults(newResults);
       setStatus("done");
@@ -156,7 +160,8 @@ function CreatePageContent() {
   }, [handleGenerate]);
 
   const handleRegenerateSingle = useCallback(async (style: MemeStyle) => {
-    // Call API with just this one style
+    if (regeneratingStyle === style) return; // prevent double click
+    setRegeneratingStyle(style);
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -175,8 +180,10 @@ function CreatePageContent() {
       }
     } catch {
       showToast("重新生成失败", "error");
+    } finally {
+      setRegeneratingStyle(null);
     }
-  }, [inputText, showToast]);
+  }, [inputText, showToast, regeneratingStyle]);
 
   return (
     <>
@@ -199,7 +206,7 @@ function CreatePageContent() {
           <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
             {/* Left column: input & controls */}
             <div className="lg:w-[40%]">
-              <TextInput value={inputText} onChange={setInputText} />
+              <TextInput value={inputText} onChange={setInputText} refreshTrigger={generationCount} />
               <StyleSelector selected={selectedStyles} onChange={setSelectedStyles} />
               <GenerateButton
                 status={status}
@@ -222,6 +229,7 @@ function CreatePageContent() {
                 onClear={handleClear}
                 onRetry={handleRetry}
                 onRegenerateSingle={handleRegenerateSingle}
+                regeneratingStyle={regeneratingStyle}
               />
             </div>
           </div>
@@ -241,9 +249,7 @@ function CreatePageContent() {
 export default function CreatePage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-bg" />}>
-      <ToastProvider>
-        <CreatePageContent />
-      </ToastProvider>
+      <CreatePageContent />
     </Suspense>
   );
 }

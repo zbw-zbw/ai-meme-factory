@@ -33,9 +33,9 @@ export function useToast() {
 let nextId = 0;
 
 const typeStyles: Record<ToastType, string> = {
-  success: "bg-green-600 text-white",
-  error: "bg-red-600 text-white",
-  info: "bg-amber-500 text-white",
+  success: "bg-primary-dark text-white",
+  error: "bg-savage-accent text-white",
+  info: "bg-primary text-white",
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -60,22 +60,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className="pointer-events-auto rounded-lg px-5 py-3 text-sm font-medium shadow-lg"
+            className={`pointer-events-auto rounded-lg px-5 py-3 text-sm font-medium shadow-lg ${typeStyles[toast.type]}`}
             style={{
               animation: "toast-in 0.3s ease-out both, toast-out 0.3s ease-in 2.2s both",
             }}
           >
-            <style>{`
-              @keyframes toast-in {
-                from { opacity: 0; transform: translateY(12px); }
-                to   { opacity: 1; transform: translateY(0); }
-              }
-              @keyframes toast-out {
-                from { opacity: 1; transform: translateY(0); }
-                to   { opacity: 0; transform: translateY(12px); }
-              }
-            `}</style>
-            <span className={typeStyles[toast.type]}>{toast.message}</span>
+            {toast.message}
           </div>
         ))}
       </div>

@@ -73,6 +73,7 @@ export default function Navbar() {
           onClick={() => setMenuOpen(!menuOpen)}
           className="flex items-center justify-center md:hidden"
           aria-label="切换菜单"
+          aria-expanded={menuOpen}
         >
           {menuOpen ? (
             <CloseIcon className="h-6 w-6 text-text-dark" />

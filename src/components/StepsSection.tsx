@@ -30,7 +30,10 @@ export default function StepsSection() {
           </h2>
         </FadeInWrapper>
 
-        <div className="flex flex-col gap-8">
+        <div className="relative flex flex-col gap-8">
+          {/* Vertical connecting line */}
+          <div className="absolute left-[26px] md:left-[30px] top-14 bottom-0 w-px border-l-2 border-dashed border-border-light" />
+
           {steps.map((step) => (
             <FadeInWrapper key={step.number} threshold={0.2}>
               {/* Full-width row on mobile, centered on desktop */}

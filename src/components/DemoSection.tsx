@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import FadeInWrapper from "./FadeInWrapper";
-import { StyleIcon, EyeIcon } from "@/components/Icons";
+import { StyleIcon, EyeIcon, RefreshIcon } from "@/components/Icons";
 import type { IconName } from "@/types/meme";
 
 const demoText = "这个需求能不能别改了";
@@ -180,6 +180,18 @@ export default function DemoSection() {
                 {memeCards.map((card, i) => (
                   <MemeCard key={card.label} card={card} index={i} />
                 ))}
+              </div>
+            )}
+
+            {showCards && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => { setDisplayText(''); setTypingDone(false); setShowCards(false); setBtnActive(false); hasStarted.current = false; startTyping(); }}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[0.85rem] text-text-muted border border-border-light transition-colors hover:text-text-dark hover:border-border cursor-pointer bg-transparent"
+                >
+                  <RefreshIcon className="h-3.5 w-3.5" />
+                  重新播放
+                </button>
               </div>
             )}
           </div>

@@ -13,6 +13,11 @@ const decorations = [
 export default function HeroSection() {
   return (
     <section className="noise-bg relative flex min-h-[calc(100svh-64px)] flex-col items-center justify-center overflow-hidden px-6 pb-20 pt-24 md:px-8">
+      {/* Mobile decorative blobs */}
+      <div className="pointer-events-none absolute top-[15%] -left-10 h-32 w-32 rounded-full bg-primary-light/20 blur-2xl md:hidden" />
+      <div className="pointer-events-none absolute bottom-[20%] -right-8 h-24 w-24 rounded-full bg-accent-light/20 blur-2xl md:hidden" />
+      <div className="pointer-events-none absolute top-[60%] left-[5%] h-20 w-20 rounded-full bg-chill-accent/15 blur-2xl md:hidden" />
+
       {/* Floating decorations - hidden on mobile for cleaner look */}
       {decorations.map((item, i) => {
         const { Icon } = item;

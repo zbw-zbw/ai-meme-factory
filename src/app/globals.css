@@ -83,6 +83,17 @@
   50% { background-position: 100% 50%; }
 }
 
+/* Toast animations */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(12px) scale(0.96); }
+}
+
 /* ===== Noise texture overlay ===== */
 
 .noise-bg::before {

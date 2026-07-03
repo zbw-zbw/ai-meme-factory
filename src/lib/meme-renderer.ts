@@ -247,12 +247,17 @@ function drawBrandWatermark(ctx: CanvasRenderingContext2D, style: MemeStyle, siz
 /**
  * Render meme using Canvas-only mode (vector icons + patterns).
  */
-function renderCanvasOnly(
+async function renderCanvasOnly(
   text: string,
   style: MemeStyle,
   caption: string,
   icon: IconName,
-): MemeItem {
+): Promise<MemeItem> {
+  // Wait for fonts to be ready before rendering text
+  if (typeof document !== 'undefined') {
+    await document.fonts.ready;
+  }
+
   const config = getStyleConfig(style);
   const canvas = document.createElement('canvas');
   const displaySize = CANVAS_SIZE;
@@ -288,7 +293,7 @@ function renderCanvasOnly(
     originalText: text,
     caption,
     icon,
-    dataUrl: canvas.toDataURL('image/png'),
+    dataUrl: canvas.toDataURL('image/jpeg', 0.85),
     createdAt: Date.now(),
   };
 }
@@ -405,7 +410,7 @@ function renderWithAIImage(
         originalText: text,
         caption,
         icon,
-        dataUrl: canvas.toDataURL('image/png'),
+        dataUrl: canvas.toDataURL('image/jpeg', 0.85),
         createdAt: Date.now(),
       });
     };
@@ -423,6 +428,7 @@ function renderWithAIImage(
  * Main render entry point.
  * If imageUrl is provided (AI-generated), renders with image background + text overlay.
  * Otherwise, falls back to Canvas-only rendering (vector icons + patterns).
+ * Always returns a Promise<MemeItem>.
  */
 export function renderMemeToCanvas(
   text: string,
@@ -430,7 +436,7 @@ export function renderMemeToCanvas(
   caption: string,
   icon: IconName,
   imageUrl?: string,
-): MemeItem | Promise<MemeItem> {
+): Promise<MemeItem> {
   if (imageUrl) {
     return renderWithAIImage(text, style, caption, icon, imageUrl);
   }
@@ -440,7 +446,9 @@ export function renderMemeToCanvas(
 export function downloadMeme(item: MemeItem): void {
   const a = document.createElement('a');
   a.href = item.dataUrl;
-  a.download = `meme-${item.style}-${item.createdAt}.png`;
+  // Use caption snippet for readable filename
+  const captionSlug = item.caption.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '').slice(0, 12) || 'meme';
+  a.download = `${item.style}-${captionSlug}.jpg`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
