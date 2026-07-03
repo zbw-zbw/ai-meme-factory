@@ -9,8 +9,8 @@ import StyleSelector from "@/components/create/StyleSelector";
 import GenerateButton from "@/components/create/GenerateButton";
 import MemeResultGrid from "@/components/create/MemeResultGrid";
 import { ToastProvider, useToast } from "@/components/Toast";
-import { renderMemeToCanvas, downloadMeme, saveToGallery } from "@/lib/meme-renderer";
-import { ALL_STYLES } from "@/lib/meme-styles";
+import { renderMemeToCanvas, downloadMeme, saveToGallery, saveBatchToGallery } from "@/lib/meme-renderer";
+import { ALL_STYLES, styleConfigs } from "@/lib/meme-styles";
 import type { MemeStyle, MemeItem, GenerateStatus, IconName } from "@/types/meme";
 import type { ProgressPhase } from "@/types/create";
 
@@ -77,6 +77,8 @@ function CreatePageContent() {
 
       if (data.data.demoMode) {
         setDemoMode(true);
+      } else {
+        setDemoMode(false);
       }
 
       // Phase 2: Render memes (may be async if AI images are involved)
@@ -88,10 +90,8 @@ function CreatePageContent() {
       // Wait for all renders (some may be sync, some async with image loading)
       const newResults: MemeItem[] = await Promise.all(renderPromises);
 
-      // Save each result to gallery (localStorage)
-      newResults.forEach((item) => {
-        saveToGallery(item);
-      });
+      // Save all results to gallery (localStorage) in one batch write
+      saveBatchToGallery(newResults);
 
       setResults(newResults);
       setStatus("done");
@@ -126,23 +126,17 @@ function CreatePageContent() {
   }, [results, showToast]);
 
   const handleCopyAll = useCallback(async () => {
+    if (results.length === 0) return;
     try {
-      for (const item of results) {
-        const response = await fetch(item.dataUrl);
-        const blob = await response.blob();
-        await navigator.clipboard.write([
-          new ClipboardItem({ [blob.type]: blob }),
-        ]);
-      }
-      showToast("已复制到剪贴板", "success");
+      const first = results[0];
+      const response = await fetch(first.dataUrl);
+      const blob = await response.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob }),
+      ]);
+      showToast("已复制第一张到剪贴板", "success");
     } catch {
-      // Fallback: just copy the first one as data URL
-      try {
-        await navigator.clipboard.writeText(results[0]?.dataUrl || "");
-        showToast("已复制到剪贴板", "success");
-      } catch {
-        // Silently fail
-      }
+      // Silently fail (no useful fallback for clipboard image)
     }
   }, [results, showToast]);
 
@@ -160,6 +154,29 @@ function CreatePageContent() {
     setErrorMessage("");
     setTimeout(() => handleGenerate(), 100);
   }, [handleGenerate]);
+
+  const handleRegenerateSingle = useCallback(async (style: MemeStyle) => {
+    // Call API with just this one style
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: inputText.trim(), styles: [style] }),
+      });
+      const data = await response.json();
+      if (data.success && data.data?.memes?.[0]) {
+        const meme = data.data.memes[0];
+        const newItem = await Promise.resolve(
+          renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.icon, meme.imageUrl)
+        );
+        saveToGallery(newItem as MemeItem);
+        setResults(prev => prev.map(r => r.style === style ? (newItem as MemeItem) : r));
+        showToast(`已重新生成${styleConfigs[style].name}`, "success");
+      }
+    } catch {
+      showToast("重新生成失败", "error");
+    }
+  }, [inputText, showToast]);
 
   return (
     <>
@@ -204,6 +221,7 @@ function CreatePageContent() {
                 onCopyAll={handleCopyAll}
                 onClear={handleClear}
                 onRetry={handleRetry}
+                onRegenerateSingle={handleRegenerateSingle}
               />
             </div>
           </div>

@@ -72,19 +72,6 @@ export function SearchIcon(props: IconProps) {
   );
 }
 
-/* ===== Robot ===== */
-export function RobotIcon(props: IconProps) {
-  return (
-    <svg {...base(props)} fill="currentColor">
-      <rect x="4" y="8" width="16" height="12" rx="2" />
-      <rect x="9" y="2" width="6" height="4" rx="1" />
-      <circle cx="9" cy="13" r="1.5" fill="white" />
-      <circle cx="15" cy="13" r="1.5" fill="white" />
-      <rect x="10" y="16" width="4" height="2" rx="1" fill="white" />
-    </svg>
-  );
-}
-
 /* ===== Save / Download ===== */
 export function DownloadIcon(props: IconProps) {
   return (
@@ -124,26 +111,6 @@ export function RefreshIcon(props: IconProps) {
       <path d="M23 4v6h-6" />
       <path d="M1 20v-6h6" />
       <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
-    </svg>
-  );
-}
-
-/* ===== Target ===== */
-export function TargetIcon(props: IconProps) {
-  return (
-    <svg {...base(props)} stroke="currentColor" strokeWidth={2}>
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" fill="currentColor" />
-    </svg>
-  );
-}
-
-/* ===== Lightbulb ===== */
-export function LightbulbIcon(props: IconProps) {
-  return (
-    <svg {...base(props)} fill="currentColor">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 18h4v1c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-1z" />
     </svg>
   );
 }
@@ -193,16 +160,6 @@ export function AlertIcon(props: IconProps) {
   return (
     <svg {...base(props)} fill="currentColor">
       <path d="M12 2L1 21h22L12 2zm0 6l7.53 13H4.47L12 8zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z" />
-    </svg>
-  );
-}
-
-/* ===== Home ===== */
-export function HomeIcon(props: IconProps) {
-  return (
-    <svg {...base(props)} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
     </svg>
   );
 }
@@ -270,15 +227,6 @@ export function CloseIcon(props: IconProps) {
     <svg {...base(props)} stroke="currentColor" strokeWidth={2} strokeLinecap="round">
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
-
-/* ===== Chevron Down ===== */
-export function ChevronDownIcon(props: IconProps) {
-  return (
-    <svg {...base(props)} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }

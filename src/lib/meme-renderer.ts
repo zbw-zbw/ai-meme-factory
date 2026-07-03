@@ -467,6 +467,25 @@ export function saveToGallery(item: MemeItem): void {
   }
 }
 
+export function saveBatchToGallery(items: MemeItem[]): void {
+  if (typeof window === 'undefined' || items.length === 0) return;
+  try {
+    const existing = getGalleryItems();
+    const newItems = items.map((item) => ({ ...item }));
+    const updated = [...newItems, ...existing].slice(0, 30);
+    localStorage.setItem(GALLERY_KEY, JSON.stringify(updated));
+  } catch {
+    // localStorage might be full, try removing old items
+    try {
+      const existing = getGalleryItems().slice(0, 10);
+      const newItems = items.map((item) => ({ ...item }));
+      localStorage.setItem(GALLERY_KEY, JSON.stringify([...newItems, ...existing]));
+    } catch {
+      // Give up silently
+    }
+  }
+}
+
 export function getGalleryItems(): MemeItem[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -491,4 +510,24 @@ export function deleteGalleryItem(id: string): void {
 export function clearGallery(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(GALLERY_KEY);
+}
+
+// ===== Recent Prompts Storage (localStorage) =====
+const RECENT_KEY = 'ai-meme-factory-recent';
+
+export function getRecentPrompts(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(RECENT_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch { return []; }
+}
+
+export function addRecentPrompt(text: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getRecentPrompts().filter(p => p !== text);
+    const updated = [text, ...existing].slice(0, 5);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+  } catch { /* ignore */ }
 }

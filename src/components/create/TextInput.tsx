@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useEffect, type ChangeEvent } from "react";
+import { useRef, useEffect, useState, type ChangeEvent } from "react";
 import { PenIcon } from "@/components/Icons";
+import { getRecentPrompts } from "@/lib/meme-renderer";
 
 const quickExamples = [
   "这个需求能不能别改了",
@@ -18,6 +19,12 @@ interface TextInputProps {
 
 export default function TextInput({ value, onChange }: TextInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [recentPrompts, setRecentPrompts] = useState<string[]>([]);
+
+  // Load recent prompts on mount
+  useEffect(() => {
+    setRecentPrompts(getRecentPrompts());
+  }, []);
 
   // Auto-resize textarea based on content
   useEffect(() => {
@@ -74,6 +81,20 @@ export default function TextInput({ value, onChange }: TextInputProps) {
           ))}
         </div>
       </div>
+
+      {recentPrompts.length > 0 && (
+        <div className="mt-3">
+          <p className="mb-2 text-[0.85rem] text-text-muted">最近使用</p>
+          <div className="flex flex-wrap gap-2">
+            {recentPrompts.map((prompt) => (
+              <button key={prompt} onClick={() => onChange(prompt)}
+                className="inline-block rounded-full border border-dashed border-border px-3 py-1.5 text-[0.85rem] text-text-muted transition-all duration-200 hover:border-primary hover:text-text-dark cursor-pointer bg-transparent">
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -33,12 +33,11 @@ export default function GenerateButton({ status, progressPhase, canGenerate, onC
     <button
       onClick={onClick}
       disabled={isDisabled}
-      className={`mt-6 w-full rounded-xl px-6 py-3.5 text-[1rem] font-bold text-white transition-all duration-200 no-underline ${
+      className={`btn-primary mt-6 w-full rounded-xl px-6 py-3.5 text-[1rem] no-underline transition-all duration-200 ${
         isDisabled
           ? "cursor-not-allowed opacity-50"
-          : "cursor-pointer hover:scale-[1.02]"
+          : "cursor-pointer"
       }`}
-      style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }}
     >
       <span className="inline-flex items-center gap-2">
         {status === "generating" && (

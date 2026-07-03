@@ -23,6 +23,19 @@ import { ToastProvider, useToast } from "@/components/Toast";
 
 const ALL_STYLE_KEYS = Object.keys(styleConfigs) as MemeStyle[];
 
+function relativeTime(ts: number): string {
+  const diff = Date.now() - ts;
+  const seconds = Math.floor(diff / 1000);
+  if (seconds < 60) return '刚刚';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}分钟前`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}小时前`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}天前`;
+  return new Date(ts).toLocaleDateString('zh-CN');
+}
+
 function GalleryContent() {
   const [items, setItems] = useState<MemeItem[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -177,8 +190,7 @@ function GalleryContent() {
               </p>
               <Link
                 href="/create"
-                className="mt-6 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[0.95rem] font-bold text-white no-underline transition-transform duration-200 hover:scale-105"
-                style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }}
+                className="btn-primary mt-6 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[0.95rem] no-underline transition-transform duration-200 hover:scale-105"
               >
                 去生成表情包
                 <ArrowRightIcon className="h-4 w-4" />
@@ -253,6 +265,7 @@ function GalleryContent() {
                       <p className="truncate text-[0.75rem] text-text-light" title={item.caption}>
                         {item.caption}
                       </p>
+                      <p className="text-[0.65rem] text-text-light">{relativeTime(item.createdAt)}</p>
                     </div>
                   </div>
                 );
@@ -265,8 +278,7 @@ function GalleryContent() {
             <div className="mt-10 text-center">
               <Link
                 href="/create"
-                className="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-[1rem] font-bold text-white no-underline transition-transform duration-200 hover:scale-105"
-                style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }}
+                className="btn-primary inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-[1rem] no-underline transition-transform duration-200 hover:scale-105"
               >
                 <SparklesIcon className="h-5 w-5" />
                 再做一批
@@ -278,8 +290,8 @@ function GalleryContent() {
 
       {/* Confirm clear dialog overlay */}
       {showConfirmClear && (
-        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/40">
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl">
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/40 animate-[fade-in_0.2s_ease-out]">
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl" style={{ animation: 'bounce-in 0.3s ease-out' }}>
             <h3 className="text-[1.05rem] font-bold text-text-dark">
               确认清空
             </h3>

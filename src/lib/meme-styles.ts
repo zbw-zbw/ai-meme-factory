@@ -1,4 +1,4 @@
-import type { MemeStyle, StyleConfig, IconName } from '@/types/meme';
+import type { MemeStyle, StyleConfig } from '@/types/meme';
 
 export const ALL_STYLES: MemeStyle[] = ['cute', 'savage', 'chill', 'formal'];
 
@@ -56,11 +56,3 @@ export const styleConfigs: Record<MemeStyle, StyleConfig> = {
 export function getStyleConfig(style: MemeStyle): StyleConfig {
   return styleConfigs[style];
 }
-
-// Map icon names to display in UI
-export const iconDisplayMap: Record<IconName, string> = {
-  heart: 'Heart',
-  fire: 'Fire',
-  fish: 'Fish',
-  briefcase: 'Briefcase',
-};

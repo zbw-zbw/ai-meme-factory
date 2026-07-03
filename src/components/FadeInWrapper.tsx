@@ -2,34 +2,37 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-/* ---- Shared single IntersectionObserver for all FadeInWrapper instances ---- */
+/* ---- Shared IntersectionObservers keyed by threshold ---- */
 const observerMap = new WeakMap<Element, true>();
-
-let sharedObserver: IntersectionObserver | null = null;
+const observerCache = new Map<number, IntersectionObserver>();
 
 function getSharedObserver(threshold: number): IntersectionObserver {
-  if (!sharedObserver) {
-    sharedObserver = new IntersectionObserver(
+  let observer = observerCache.get(threshold);
+  if (!observer) {
+    observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
             entry.target.classList.add("visible");
             observerMap.delete(entry.target);
-            sharedObserver?.unobserve(entry.target);
+            observer?.unobserve(entry.target);
           }
         }
       },
       { threshold }
     );
+    observerCache.set(threshold, observer);
   }
-  return sharedObserver;
+  return observer;
 }
 
 /* Clean up on module unload (Safeguards against HMR) */
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
-    sharedObserver?.disconnect();
-    sharedObserver = null;
+    for (const obs of observerCache.values()) {
+      obs.disconnect();
+    }
+    observerCache.clear();
   });
 }
 

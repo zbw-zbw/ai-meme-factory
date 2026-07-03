@@ -20,8 +20,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl px-8 py-4 text-[1.1rem] font-bold text-white no-underline transition-transform duration-200 hover:scale-105"
-          style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }}
+          className="btn-primary inline-flex items-center gap-2 rounded-xl px-8 py-4 text-[1.1rem] no-underline transition-transform duration-200 hover:scale-105"
         >
           <LogoIcon className="h-5 w-5" />
           回到首页

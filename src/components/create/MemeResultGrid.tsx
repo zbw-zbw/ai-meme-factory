@@ -25,6 +25,7 @@ interface MemeResultGridProps {
   onCopyAll: () => void;
   onClear: () => void;
   onRetry: () => void;
+  onRegenerateSingle?: (style: MemeStyle) => void;
 }
 
 const skeletonBgMap: Record<MemeStyle, string> = {
@@ -60,6 +61,7 @@ export default function MemeResultGrid({
   onCopyAll,
   onClear,
   onRetry,
+  onRegenerateSingle,
 }: MemeResultGridProps) {
   // Empty state
   if (status === "idle" && results.length === 0) {
@@ -163,9 +165,7 @@ export default function MemeResultGrid({
           <SparklesIcon className="h-6 w-6 text-primary-dark" />
           生成结果
         </h2>
-        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl py-16"
-          style={{ backgroundColor: "#FEF2F2" }}
-        >
+        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl bg-red-50 py-16">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white">
             <AlertIcon className="h-8 w-8 text-savage-accent" />
           </div>
@@ -174,8 +174,7 @@ export default function MemeResultGrid({
           </p>
           <button
             onClick={onRetry}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-[0.9rem] font-bold text-white transition-transform duration-200 hover:scale-105 cursor-pointer"
-            style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)" }}
+            className="btn-primary mt-4 inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-[0.9rem] transition-transform duration-200 hover:scale-105 cursor-pointer"
           >
             <RefreshIcon className="h-4 w-4" />
             重试
@@ -195,7 +194,7 @@ export default function MemeResultGrid({
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {results.map((item, i) => (
-          <MemeResult key={item.id} item={item} index={i} />
+          <MemeResult key={item.id} item={item} index={i} onRegenerate={onRegenerateSingle} />
         ))}
       </div>
 
