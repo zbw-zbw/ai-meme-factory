@@ -1,6 +1,7 @@
 "use client";
 
 import type { MemeItem, MemeStyle, GenerateStatus } from "@/types/meme";
+import type { ProgressPhase } from "@/app/create/page";
 import { styleConfigs } from "@/lib/meme-styles";
 import MemeResult from "./MemeResult";
 import {
@@ -10,15 +11,18 @@ import {
   RefreshIcon,
   DownloadIcon,
   TrashIcon,
+  CopyIcon,
   StyleIcon,
 } from "@/components/Icons";
 
 interface MemeResultGridProps {
   results: MemeItem[];
   status: GenerateStatus;
+  progressPhase: ProgressPhase;
   selectedStyles: MemeStyle[];
   errorMessage?: string;
   onDownloadAll: () => void;
+  onCopyAll: () => void;
   onClear: () => void;
   onRetry: () => void;
 }
@@ -37,12 +41,23 @@ const skeletonIconColor: Record<MemeStyle, string> = {
   formal: "#475569",
 };
 
+const phaseDescriptions: Record<ProgressPhase, string> = {
+  idle: "",
+  caption: "AI 正在为你创作有趣文案...",
+  image: "AI 正在绘制卡通插图...",
+  render: "正在合成表情包图片...",
+  done: "",
+  error: "",
+};
+
 export default function MemeResultGrid({
   results,
   status,
+  progressPhase,
   selectedStyles,
   errorMessage,
   onDownloadAll,
+  onCopyAll,
   onClear,
   onRetry,
 }: MemeResultGridProps) {
@@ -66,7 +81,7 @@ export default function MemeResultGrid({
     );
   }
 
-  // Generating skeleton
+  // Generating skeleton with phase progress
   if (status === "generating") {
     return (
       <div>
@@ -74,22 +89,67 @@ export default function MemeResultGrid({
           <SparklesIcon className="h-6 w-6 text-primary-dark" />
           生成结果
         </h2>
+
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {selectedStyles.map((style) => (
+          {selectedStyles.map((style, idx) => (
             <div
               key={style}
-              className={`flex aspect-square items-center justify-center rounded-2xl ${skeletonBgMap[style]} animate-pulse`}
+              className={`relative flex aspect-square items-center justify-center rounded-2xl ${skeletonBgMap[style]} overflow-hidden`}
             >
+              {/* Shimmer effect */}
+              <div
+                className="absolute inset-0 animate-pulse"
+                style={{
+                  background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)`,
+                  animationDuration: '1.5s',
+                  animationDelay: `${idx * 0.3}s`,
+                }}
+              />
+
+              {/* Icon */}
               <StyleIcon
                 name={styleConfigs[style].icon}
                 className="h-12 w-12"
-                style={{ color: skeletonIconColor[style], opacity: 0.5 }}
+                style={{ color: skeletonIconColor[style], opacity: 0.4 }}
               />
             </div>
           ))}
         </div>
-        <p className="mt-4 text-center text-[0.9rem] text-text-muted">
-          AI 正在为你创作表情包...
+
+        {/* Phase indicator */}
+        {phaseDescriptions[progressPhase] && (
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <div className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                progressPhase === 'caption' ? 'scale-125 bg-primary' : 'bg-border'
+              }`} />
+              <span className={`text-[0.8rem] transition-colors duration-300 ${
+                progressPhase === 'caption' ? 'font-medium text-text-dark' : 'text-text-light'
+              }`}>文案</span>
+            </div>
+            <div className="h-px w-6 bg-border-light" />
+            <div className="flex items-center gap-1.5">
+              <div className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                progressPhase === 'image' ? 'scale-125 bg-primary' : 'bg-border'
+              }`} />
+              <span className={`text-[0.8rem] transition-colors duration-300 ${
+                progressPhase === 'image' ? 'font-medium text-text-dark' : 'text-text-light'
+              }`}>插图</span>
+            </div>
+            <div className="h-px w-6 bg-border-light" />
+            <div className="flex items-center gap-1.5">
+              <div className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                progressPhase === 'render' ? 'scale-125 bg-primary' : 'bg-border'
+              }`} />
+              <span className={`text-[0.8rem] transition-colors duration-300 ${
+                progressPhase === 'render' ? 'font-medium text-text-dark' : 'text-text-light'
+              }`}>合成</span>
+            </div>
+          </div>
+        )}
+
+        <p className="mt-3 text-center text-[0.85rem] text-text-muted">
+          {phaseDescriptions[progressPhase]}
         </p>
       </div>
     );
@@ -141,20 +201,27 @@ export default function MemeResultGrid({
 
       {/* Bottom actions */}
       {results.length > 0 && (
-        <div className="mt-5 flex gap-3">
+        <div className="mt-5 grid grid-cols-3 gap-3">
           <button
             onClick={onDownloadAll}
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
           >
             <DownloadIcon className="h-4 w-4" />
-            全部下载
+            下载
+          </button>
+          <button
+            onClick={onCopyAll}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
+          >
+            <CopyIcon className="h-4 w-4" />
+            复制
           </button>
           <button
             onClick={onClear}
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
           >
             <TrashIcon className="h-4 w-4" />
-            清空重来
+            清空
           </button>
         </div>
       )}

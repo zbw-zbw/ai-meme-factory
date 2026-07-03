@@ -17,13 +17,11 @@ const iconPaths: Record<IconName, string> = {
 function drawIcon(ctx: CanvasRenderingContext2D, icon: IconName, cx: number, cy: number, size: number, color: string) {
   const pathData = iconPaths[icon];
   const path = new Path2D(pathData);
-
   ctx.save();
-  // Scale from 24x24 viewBox to target size, centered
   const scale = (size * DPR) / 24;
   ctx.translate(cx * DPR, cy * DPR);
   ctx.scale(scale, scale);
-  ctx.translate(-12, -12); // center the 24x24 icon
+  ctx.translate(-12, -12);
   ctx.fillStyle = color;
   ctx.fill(path);
   ctx.restore();
@@ -33,7 +31,6 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
   const chars = text.split('');
   const lines: string[] = [];
   let currentLine = '';
-
   for (const char of chars) {
     const testLine = currentLine + char;
     const metrics = ctx.measureText(testLine);
@@ -50,8 +47,6 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
 
 function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: number) {
   const config = getStyleConfig(style);
-
-  // Parse gradient stops
   const stopColors: string[] = [];
   const regex = /#[0-9A-Fa-f]{6}/g;
   let match: RegExpExecArray | null;
@@ -68,7 +63,6 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
 
   // Style-specific decorative patterns
   if (style === 'cute') {
-    // Floating hearts pattern
     ctx.globalAlpha = 0.08;
     ctx.fillStyle = config.accentColor;
     const positions = [
@@ -80,8 +74,6 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       drawIcon(ctx, 'heart', p.x * size, p.y * size, p.s, config.accentColor);
     }
     ctx.globalAlpha = 1;
-
-    // Rounded border
     ctx.globalAlpha = 0.15;
     ctx.strokeStyle = config.accentColor;
     ctx.lineWidth = 3 * DPR;
@@ -90,9 +82,7 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
     ctx.roundRect(8 * DPR, 8 * DPR, size * DPR - 16 * DPR, size * DPR - 16 * DPR, r);
     ctx.stroke();
     ctx.globalAlpha = 1;
-
   } else if (style === 'savage') {
-    // Diagonal stripe texture
     ctx.globalAlpha = 0.06;
     ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 2 * DPR;
@@ -102,32 +92,22 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       ctx.lineTo((i + size) * DPR, size * DPR);
       ctx.stroke();
     }
-
-    // Red accent bar at top
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = config.accentColor;
     ctx.fillRect(0, 0, size * DPR, 6 * DPR);
     ctx.fillRect(0, (size - 6) * DPR, size * DPR, 6 * DPR);
     ctx.globalAlpha = 1;
-
-    // Corner brackets
     ctx.globalAlpha = 0.3;
     ctx.strokeStyle = config.accentColor;
     ctx.lineWidth = 3 * DPR;
     const bLen = 40 * DPR;
     const inset = 20 * DPR;
-    // Top-left
     ctx.beginPath(); ctx.moveTo(inset, inset + bLen); ctx.lineTo(inset, inset); ctx.lineTo(inset + bLen, inset); ctx.stroke();
-    // Top-right
     ctx.beginPath(); ctx.moveTo(size * DPR - inset - bLen, inset); ctx.lineTo(size * DPR - inset, inset); ctx.lineTo(size * DPR - inset, inset + bLen); ctx.stroke();
-    // Bottom-left
     ctx.beginPath(); ctx.moveTo(inset, size * DPR - inset - bLen); ctx.lineTo(inset, size * DPR - inset); ctx.lineTo(inset + bLen, size * DPR - inset); ctx.stroke();
-    // Bottom-right
     ctx.beginPath(); ctx.moveTo(size * DPR - inset - bLen, size * DPR - inset); ctx.lineTo(size * DPR - inset, size * DPR - inset); ctx.lineTo(size * DPR - inset, size * DPR - inset - bLen); ctx.stroke();
     ctx.globalAlpha = 1;
-
   } else if (style === 'chill') {
-    // Wave pattern at bottom
     ctx.globalAlpha = 0.1;
     ctx.fillStyle = config.accentColor;
     for (let layer = 0; layer < 3; layer++) {
@@ -144,8 +124,6 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       ctx.fill();
     }
     ctx.globalAlpha = 1;
-
-    // Dotted pattern
     ctx.globalAlpha = 0.12;
     ctx.fillStyle = config.accentColor;
     for (let i = 0; i < 8; i++) {
@@ -156,9 +134,7 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       ctx.fill();
     }
     ctx.globalAlpha = 1;
-
   } else if (style === 'formal') {
-    // Grid pattern
     ctx.globalAlpha = 0.05;
     ctx.strokeStyle = config.accentColor;
     ctx.lineWidth = 1 * DPR;
@@ -170,8 +146,6 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size * DPR, y); ctx.stroke();
     }
     ctx.globalAlpha = 1;
-
-    // Double border frame
     ctx.globalAlpha = 0.2;
     ctx.strokeStyle = config.accentColor;
     ctx.lineWidth = 2 * DPR;
@@ -187,6 +161,7 @@ function drawCaption(
   style: MemeStyle,
   caption: string,
   size: number,
+  textY?: number, // Override for AI image mode
 ): number {
   const config = getStyleConfig(style);
   const maxLineWidth = size * 0.82 * DPR;
@@ -199,27 +174,24 @@ function drawCaption(
   const lines = wrapText(ctx, cleanCaption, maxLineWidth);
   const lineHeight = config.fontSize * 1.4 * DPR;
   const totalHeight = lines.length * lineHeight;
-  const startY = (size * 0.7) * DPR - totalHeight / 2 + lineHeight / 2;
+  const baseY = (textY !== undefined ? textY : size * 0.7) * DPR;
+  const startY = baseY - totalHeight / 2 + lineHeight / 2;
 
   if (style === 'savage') {
-    // White stroke outline for savage style
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 4 * DPR;
     ctx.lineJoin = 'round';
     lines.forEach((line, i) => {
-      const y = startY + i * lineHeight;
-      ctx.strokeText(line, (size * 0.5) * DPR, y);
+      ctx.strokeText(line, (size * 0.5) * DPR, startY + i * lineHeight);
     });
   } else if (style === 'cute') {
-    // Soft shadow for cute style
     ctx.save();
     ctx.shadowColor = 'rgba(190, 18, 60, 0.15)';
     ctx.shadowBlur = 4 * DPR;
     ctx.shadowOffsetY = 2 * DPR;
     ctx.fillStyle = config.textColor;
     lines.forEach((line, i) => {
-      const y = startY + i * lineHeight;
-      ctx.fillText(line, (size * 0.5) * DPR, y);
+      ctx.fillText(line, (size * 0.5) * DPR, startY + i * lineHeight);
     });
     ctx.restore();
     return lines.length;
@@ -227,18 +199,13 @@ function drawCaption(
 
   ctx.fillStyle = config.textColor;
   lines.forEach((line, i) => {
-    const y = startY + i * lineHeight;
-    ctx.fillText(line, (size * 0.5) * DPR, y);
+    ctx.fillText(line, (size * 0.5) * DPR, startY + i * lineHeight);
   });
 
   return lines.length;
 }
 
-function drawLabel(
-  ctx: CanvasRenderingContext2D,
-  style: MemeStyle,
-  size: number,
-) {
+function drawLabel(ctx: CanvasRenderingContext2D, style: MemeStyle, size: number) {
   const config = getStyleConfig(style);
   const label = config.name;
   const paddingX = 18 * DPR;
@@ -253,7 +220,6 @@ function drawLabel(
   const boxY = labelY - boxHeight / 2;
   const radius = boxHeight / 2;
 
-  // Rounded rect background
   ctx.globalAlpha = 0.92;
   ctx.fillStyle = config.accentColor;
   ctx.beginPath();
@@ -261,7 +227,6 @@ function drawLabel(
   ctx.fill();
   ctx.globalAlpha = 1;
 
-  // Label text
   ctx.fillStyle = '#FFFFFF';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -279,37 +244,30 @@ function drawBrandWatermark(ctx: CanvasRenderingContext2D, style: MemeStyle, siz
   ctx.globalAlpha = 1;
 }
 
-export function renderMemeToCanvas(
+/**
+ * Render meme using Canvas-only mode (vector icons + patterns).
+ */
+function renderCanvasOnly(
   text: string,
   style: MemeStyle,
   caption: string,
   icon: IconName,
 ): MemeItem {
   const config = getStyleConfig(style);
-
   const canvas = document.createElement('canvas');
   const displaySize = CANVAS_SIZE;
-  const actualSize = displaySize * DPR;
-
-  canvas.width = actualSize;
-  canvas.height = actualSize;
-  canvas.style.width = `${displaySize}px`;
-  canvas.style.height = `${displaySize}px`;
+  canvas.width = displaySize * DPR;
+  canvas.height = displaySize * DPR;
 
   const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  if (!ctx) throw new Error('Failed to get canvas context');
 
-  // 1. Draw background with patterns
   drawBackground(ctx, style, displaySize);
 
-  // 2. Draw icon in a circle badge
+  // Icon badge
   const iconCx = displaySize * 0.5;
   const iconCy = displaySize * 0.35;
   const badgeRadius = ICON_SIZE * 0.75;
-
-  // Circle badge background
   ctx.save();
   ctx.globalAlpha = 0.12;
   ctx.fillStyle = config.accentColor;
@@ -319,19 +277,10 @@ export function renderMemeToCanvas(
   ctx.globalAlpha = 1;
   ctx.restore();
 
-  // Draw the icon
   drawIcon(ctx, icon, iconCx, iconCy, ICON_SIZE, config.accentColor);
-
-  // 3. Draw caption text
   drawCaption(ctx, style, caption, displaySize);
-
-  // 4. Draw style label
   drawLabel(ctx, style, displaySize);
-
-  // 5. Draw brand watermark
   drawBrandWatermark(ctx, style, displaySize);
-
-  const dataUrl = canvas.toDataURL('image/png');
 
   return {
     id: `meme-${style}-${Date.now()}`,
@@ -339,9 +288,153 @@ export function renderMemeToCanvas(
     originalText: text,
     caption,
     icon,
-    dataUrl,
+    dataUrl: canvas.toDataURL('image/png'),
     createdAt: Date.now(),
   };
+}
+
+/**
+ * Render meme using AI-generated image as background + text overlay.
+ * Falls back to Canvas-only if image fails to load.
+ */
+function renderWithAIImage(
+  text: string,
+  style: MemeStyle,
+  caption: string,
+  icon: IconName,
+  imageUrl: string,
+): Promise<MemeItem> {
+  return new Promise((resolve) => {
+    const config = getStyleConfig(style);
+    const canvas = document.createElement('canvas');
+    const displaySize = CANVAS_SIZE;
+    canvas.width = displaySize * DPR;
+    canvas.height = displaySize * DPR;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      // Fallback to canvas-only
+      resolve(renderCanvasOnly(text, style, caption, icon));
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Draw AI image as full background (cover mode)
+      const imgRatio = img.width / img.height;
+      let sx = 0, sy = 0, sw = img.width, sh = img.height;
+      if (imgRatio > 1) {
+        sh = img.width;
+        sy = (img.height - sh) / 2;
+      } else {
+        sw = img.height;
+        sx = (img.width - sw) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, displaySize * DPR, displaySize * DPR);
+
+      // Semi-transparent overlay for text readability
+      ctx.fillStyle = style === 'savage'
+        ? 'rgba(15, 23, 42, 0.45)'
+        : style === 'cute'
+          ? 'rgba(255, 241, 242, 0.35)'
+          : style === 'chill'
+            ? 'rgba(236, 254, 255, 0.35)'
+            : 'rgba(248, 250, 252, 0.4)';
+      ctx.fillRect(0, 0, displaySize * DPR, displaySize * DPR);
+
+      // Style-specific border accent
+      if (style === 'savage') {
+        ctx.fillStyle = config.accentColor;
+        ctx.globalAlpha = 0.8;
+        ctx.fillRect(0, 0, displaySize * DPR, 5 * DPR);
+        ctx.fillRect(0, (displaySize - 5) * DPR, displaySize * DPR, 5 * DPR);
+        ctx.globalAlpha = 1;
+      } else {
+        ctx.globalAlpha = 0.2;
+        ctx.strokeStyle = config.accentColor;
+        ctx.lineWidth = 3 * DPR;
+        const r = 16 * DPR;
+        ctx.beginPath();
+        ctx.roundRect(6 * DPR, 6 * DPR, displaySize * DPR - 12 * DPR, displaySize * DPR - 12 * DPR, r);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      // Draw caption at bottom area (text overlay on image)
+      // Add dark shadow for readability on image background
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+      ctx.shadowBlur = 6 * DPR;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2 * DPR;
+
+      // Force white text on AI images for contrast
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `${config.fontWeight} ${config.fontSize * DPR}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const maxLineWidth = displaySize * 0.82 * DPR;
+      const cleanCaption = caption.replace(/\n/g, ' ');
+      const lines = wrapText(ctx, cleanCaption, maxLineWidth);
+      const lineHeight = config.fontSize * 1.5 * DPR;
+      const totalHeight = lines.length * lineHeight;
+      const startY = (displaySize * 0.72) * DPR - totalHeight / 2 + lineHeight / 2;
+
+      // Black stroke for all text on image
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.lineWidth = 3 * DPR;
+      ctx.lineJoin = 'round';
+      lines.forEach((line, i) => {
+        const y = startY + i * lineHeight;
+        ctx.strokeText(line, (displaySize * 0.5) * DPR, y);
+      });
+
+      ctx.restore();
+
+      // Draw label
+      drawLabel(ctx, style, displaySize);
+
+      // Watermark
+      drawBrandWatermark(ctx, style, displaySize);
+
+      resolve({
+        id: `meme-${style}-${Date.now()}`,
+        style,
+        originalText: text,
+        caption,
+        icon,
+        dataUrl: canvas.toDataURL('image/png'),
+        createdAt: Date.now(),
+      });
+    };
+
+    img.onerror = () => {
+      // Fallback to canvas-only rendering
+      resolve(renderCanvasOnly(text, style, caption, icon));
+    };
+
+    img.src = imageUrl;
+  });
+}
+
+/**
+ * Main render entry point.
+ * If imageUrl is provided (AI-generated), renders with image background + text overlay.
+ * Otherwise, falls back to Canvas-only rendering (vector icons + patterns).
+ */
+export function renderMemeToCanvas(
+  text: string,
+  style: MemeStyle,
+  caption: string,
+  icon: IconName,
+  imageUrl?: string,
+): MemeItem | Promise<MemeItem> {
+  if (imageUrl) {
+    return renderWithAIImage(text, style, caption, icon, imageUrl);
+  }
+  return renderCanvasOnly(text, style, caption, icon);
 }
 
 export function downloadMeme(item: MemeItem): void {
@@ -360,15 +453,13 @@ export function saveToGallery(item: MemeItem): void {
   if (typeof window === 'undefined') return;
   try {
     const existing = getGalleryItems();
-    // Don't save if dataUrl is too large for localStorage (limit ~5MB)
     const newItem = { ...item };
-    // Keep only last 50 items
-    const updated = [newItem, ...existing].slice(0, 50);
+    const updated = [newItem, ...existing].slice(0, 30);
     localStorage.setItem(GALLERY_KEY, JSON.stringify(updated));
   } catch {
     // localStorage might be full, try removing old items
     try {
-      const existing = getGalleryItems().slice(0, 20);
+      const existing = getGalleryItems().slice(0, 10);
       localStorage.setItem(GALLERY_KEY, JSON.stringify([item, ...existing]));
     } catch {
       // Give up silently

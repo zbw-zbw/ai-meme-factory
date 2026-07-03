@@ -19,18 +19,23 @@ interface ApiResponse {
       style: MemeStyle;
       caption: string;
       icon: IconName;
+      imageUrl?: string;
     }>;
     demoMode?: boolean;
+    aiImageMode?: boolean;
   };
   error?: string;
   code?: string;
 }
+
+export type ProgressPhase = 'idle' | 'caption' | 'image' | 'render' | 'done' | 'error';
 
 function CreatePageContent() {
   const searchParams = useSearchParams();
   const [inputText, setInputText] = useState("");
   const [selectedStyles, setSelectedStyles] = useState<MemeStyle[]>([...ALL_STYLES]);
   const [status, setStatus] = useState<GenerateStatus>("idle");
+  const [progressPhase, setProgressPhase] = useState<ProgressPhase>("idle");
   const [results, setResults] = useState<MemeItem[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [demoMode, setDemoMode] = useState(false);
@@ -49,6 +54,7 @@ function CreatePageContent() {
     if (!canGenerate || status === "generating") return;
 
     setStatus("generating");
+    setProgressPhase("caption");
     setResults([]);
     setErrorMessage("");
 
@@ -64,6 +70,7 @@ function CreatePageContent() {
       if (!data.success || !data.data) {
         setErrorMessage(data.error || "生成失败，请重试");
         setStatus("error");
+        setProgressPhase("error");
         return;
       }
 
@@ -71,10 +78,14 @@ function CreatePageContent() {
         setDemoMode(true);
       }
 
-      // Render each meme to Canvas
-      const newResults: MemeItem[] = data.data.memes.map((meme) =>
-        renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.icon),
+      // Phase 2: Render memes (may be async if AI images are involved)
+      setProgressPhase(data.data.aiImageMode ? "render" : "image");
+      const renderPromises = data.data.memes.map((meme) =>
+        renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.icon, meme.imageUrl),
       );
+
+      // Wait for all renders (some may be sync, some async with image loading)
+      const newResults: MemeItem[] = await Promise.all(renderPromises);
 
       // Save each result to gallery (localStorage)
       newResults.forEach((item) => {
@@ -83,9 +94,11 @@ function CreatePageContent() {
 
       setResults(newResults);
       setStatus("done");
+      setProgressPhase("done");
     } catch {
       setErrorMessage("网络错误，请检查连接后重试");
       setStatus("error");
+      setProgressPhase("error");
     }
   }, [canGenerate, status, inputText, selectedStyles]);
 
@@ -95,14 +108,35 @@ function CreatePageContent() {
     });
   }, [results]);
 
+  const handleCopyAll = useCallback(async () => {
+    try {
+      for (const item of results) {
+        const response = await fetch(item.dataUrl);
+        const blob = await response.blob();
+        await navigator.clipboard.write([
+          new ClipboardItem({ [blob.type]: blob }),
+        ]);
+      }
+    } catch {
+      // Fallback: just copy the first one as data URL
+      try {
+        await navigator.clipboard.writeText(results[0]?.dataUrl || "");
+      } catch {
+        // Silently fail
+      }
+    }
+  }, [results]);
+
   const handleClear = useCallback(() => {
     setResults([]);
     setStatus("idle");
+    setProgressPhase("idle");
     setErrorMessage("");
   }, []);
 
   const handleRetry = useCallback(() => {
     setStatus("idle");
+    setProgressPhase("idle");
     setErrorMessage("");
     setTimeout(() => handleGenerate(), 100);
   }, [handleGenerate]);
@@ -132,6 +166,7 @@ function CreatePageContent() {
               <StyleSelector selected={selectedStyles} onChange={setSelectedStyles} />
               <GenerateButton
                 status={status}
+                progressPhase={progressPhase}
                 canGenerate={canGenerate}
                 onClick={handleGenerate}
               />
@@ -142,9 +177,11 @@ function CreatePageContent() {
               <MemeResultGrid
                 results={results}
                 status={status}
+                progressPhase={progressPhase}
                 selectedStyles={selectedStyles}
                 errorMessage={errorMessage}
                 onDownloadAll={handleDownloadAll}
+                onCopyAll={handleCopyAll}
                 onClear={handleClear}
                 onRetry={handleRetry}
               />

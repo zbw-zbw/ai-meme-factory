@@ -1,41 +1,32 @@
 "use client";
 
 import type { GenerateStatus } from "@/types/meme";
+import type { ProgressPhase } from "@/app/create/page";
 import { SparklesIcon, RefreshIcon } from "@/components/Icons";
 
 interface GenerateButtonProps {
   status: GenerateStatus;
+  progressPhase: ProgressPhase;
   canGenerate: boolean;
   onClick: () => void;
 }
 
-export default function GenerateButton({ status, canGenerate, onClick }: GenerateButtonProps) {
+const phaseLabels: Record<ProgressPhase, string> = {
+  idle: "生成表情包",
+  caption: "AI 正在构思文案...",
+  image: "AI 正在绘制插图...",
+  render: "正在合成表情包...",
+  done: "再来一组",
+  error: "重试",
+};
+
+export default function GenerateButton({ status, progressPhase, canGenerate, onClick }: GenerateButtonProps) {
   const isDisabled = !canGenerate || status === "generating";
 
-  const getLabel = () => {
-    switch (status) {
-      case "idle":
-        return "生成表情包";
-      case "generating":
-        return "AI正在创作中...";
-      case "done":
-        return "再来一组";
-      case "error":
-        return "重试";
-    }
-  };
-
   const getIcon = () => {
-    switch (status) {
-      case "idle":
-        return <SparklesIcon className="h-5 w-5" />;
-      case "done":
-        return <RefreshIcon className="h-5 w-5" />;
-      case "error":
-        return <RefreshIcon className="h-5 w-5" />;
-      default:
-        return null;
-    }
+    if (status === "generating") return null;
+    if (status === "idle") return <SparklesIcon className="h-5 w-5" />;
+    return <RefreshIcon className="h-5 w-5" />;
   };
 
   return (
@@ -54,7 +45,7 @@ export default function GenerateButton({ status, canGenerate, onClick }: Generat
           <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
         )}
         {getIcon()}
-        {getLabel()}
+        {phaseLabels[progressPhase]}
       </span>
     </button>
   );
