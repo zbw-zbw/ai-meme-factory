@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { MemeStyle, IconName } from '@/types/meme';
 import { callDeepSeek, DeepSeekError, isApiKeyConfigured } from '@/lib/deepseek';
-import { generateImage, HFError, isHFConfigured } from '@/lib/huggingface';
+import { generateImage, HFError, isHFConfigured, runWithConcurrency } from '@/lib/huggingface';
 import { SYSTEM_PROMPT, buildUserPrompt, getDefaultIcon } from '@/lib/prompts';
 import { buildImagePrompt } from '@/lib/image-prompts';
 import { getMockCaption } from '@/lib/mock-data';
@@ -224,11 +224,11 @@ export async function POST(request: NextRequest) {
   if (isHFConfigured()) {
     aiImageMode = true;
 
-    // Generate images in parallel for all styles
-    const imagePromises = captionResults.map((meme) =>
-      generateMemeImage(cleanText, meme.caption, meme.style),
+    // Generate images with concurrency limit to avoid overwhelming HF API
+    const imageResults = await runWithConcurrency(
+      captionResults.map((meme) => () => generateMemeImage(cleanText, meme.caption, meme.style)),
+      2,
     );
-    const imageResults = await Promise.all(imagePromises);
 
     // Attach images to results
     captionResults = captionResults.map((meme, i) => ({

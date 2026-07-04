@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { LogoIcon, MenuIcon, CloseIcon } from "@/components/Icons";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   /* Scroll shadow detection */
   useEffect(() => {
@@ -49,13 +51,21 @@ export default function Navbar() {
         <div className="hidden items-center gap-6 md:flex">
           <Link
             href="/create"
-            className="text-sm font-medium text-text-muted transition-colors hover:text-text-dark no-underline"
+            className={`text-sm font-medium no-underline transition-colors ${
+              pathname === "/create"
+                ? "text-primary-dark font-semibold"
+                : "text-text-muted hover:text-text-dark"
+            }`}
           >
             生成表情包
           </Link>
           <Link
             href="/gallery"
-            className="text-sm font-medium text-text-muted transition-colors hover:text-text-dark no-underline"
+            className={`text-sm font-medium no-underline transition-colors ${
+              pathname === "/gallery"
+                ? "text-primary-dark font-semibold"
+                : "text-text-muted hover:text-text-dark"
+            }`}
           >
             我的画廊
           </Link>
@@ -94,14 +104,22 @@ export default function Navbar() {
           <Link
             href="/create"
             onClick={() => setMenuOpen(false)}
-            className="text-sm font-medium text-text-muted no-underline transition-colors hover:text-text-dark"
+            className={`text-sm font-medium no-underline transition-colors ${
+              pathname === "/create"
+                ? "text-primary-dark font-semibold"
+                : "text-text-muted hover:text-text-dark"
+            }`}
           >
             生成表情包
           </Link>
           <Link
             href="/gallery"
             onClick={() => setMenuOpen(false)}
-            className="text-sm font-medium text-text-muted no-underline transition-colors hover:text-text-dark"
+            className={`text-sm font-medium no-underline transition-colors ${
+              pathname === "/gallery"
+                ? "text-primary-dark font-semibold"
+                : "text-text-muted hover:text-text-dark"
+            }`}
           >
             我的画廊
           </Link>

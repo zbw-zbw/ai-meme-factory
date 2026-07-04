@@ -71,6 +71,17 @@ export default function HeroSection() {
         </div>
       </div>
 
+      {/* Skeleton placeholder while examples load (prevents CLS) */}
+      {mounted && examples.length === 0 && (
+        <div className="relative z-10 mt-14 w-full max-w-[700px]">
+          <div className="grid grid-cols-4 gap-3 sm:gap-4">
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="aspect-square animate-pulse rounded-xl bg-card-hover" />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Real meme examples showcase */}
       {mounted && examples.length > 0 && (
         <div className="relative z-10 mt-14 w-full max-w-[700px] animate-slide-up" style={{ animationDelay: "0.7s" }}>

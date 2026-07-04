@@ -107,6 +107,15 @@ export default function DemoSection() {
               </button>
             </div>
 
+            {/* Skeleton placeholder while examples load (prevents CLS) */}
+            {showCards && examples.length === 0 && (
+              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
+                {[0, 1, 2, 3].map(i => (
+                  <div key={i} className="aspect-square animate-pulse rounded-2xl bg-card-hover" />
+                ))}
+              </div>
+            )}
+
             {/* Real Canvas-rendered meme results */}
             {showCards && examples.length > 0 && (
               <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">

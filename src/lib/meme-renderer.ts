@@ -627,8 +627,11 @@ export function addRecentPrompt(text: string): void {
  * Pre-render example memes for showcase (e.g., Hero, Demo sections).
  * Returns an array of 4 MemeItems, one per style.
  */
+let _cachedExamples: MemeItem[] | null = null;
+
 export async function preRenderExamples(): Promise<MemeItem[]> {
   if (typeof document === 'undefined') return [];
+  if (_cachedExamples) return _cachedExamples;
   await document.fonts.ready;
 
   const examples = [
@@ -638,7 +641,9 @@ export async function preRenderExamples(): Promise<MemeItem[]> {
     { text: '不想上班', style: 'formal' as MemeStyle, caption: '关于今日出勤的补充说明', icon: 'briefcase' as IconName },
   ];
 
-  return Promise.all(
+  const result = await Promise.all(
     examples.map(ex => renderCanvasOnly(ex.text, ex.style, ex.caption, ex.icon))
   );
+  _cachedExamples = result;
+  return result;
 }

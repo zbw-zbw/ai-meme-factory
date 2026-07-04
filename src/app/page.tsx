@@ -10,11 +10,15 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main>
+      <main id="main-content">
         <HeroSection />
-        <DemoSection />
-        <FeaturesSection />
+        <div className="bg-white/50">
+          <FeaturesSection />
+        </div>
         <StepsSection />
+        <div className="bg-white/50">
+          <DemoSection />
+        </div>
         <InspirationSection />
         <CTAFooterSection />
       </main>

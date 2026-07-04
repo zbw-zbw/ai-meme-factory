@@ -27,14 +27,41 @@ export default function CTAFooterSection() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border-light px-4 py-8 sm:px-6">
-        <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-2">
-          <p className="font-display text-[0.95rem] text-text-muted">
-            AI表情包工厂
-          </p>
-          <p className="text-[0.8rem] text-text-light">
-            让每一句话都有表情 · 2026
-          </p>
+      <footer className="border-t border-border-light bg-bg-warm/30">
+        <div className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6">
+          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+            {/* Brand */}
+            <div className="text-center sm:text-left">
+              <h3 className="font-display text-[1.2rem] font-bold gradient-logo">
+                AI表情包工厂
+              </h3>
+              <p className="mt-1 text-[0.8rem] text-text-muted">
+                让每一句话都有表情
+              </p>
+            </div>
+            {/* Links */}
+            <nav className="flex flex-wrap items-center justify-center gap-4 text-[0.85rem]">
+              <Link href="/create" className="text-text-muted no-underline transition-colors hover:text-text-dark">
+                制作表情包
+              </Link>
+              <Link href="/gallery" className="text-text-muted no-underline transition-colors hover:text-text-dark">
+                我的画廊
+              </Link>
+              <a
+                href="https://github.com/zbw-zbw/ai-meme-factory"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted no-underline transition-colors hover:text-text-dark"
+              >
+                GitHub
+              </a>
+            </nav>
+          </div>
+          <div className="mt-8 border-t border-border-light pt-6 text-center">
+            <p className="text-[0.75rem] text-text-light">
+              © {new Date().getFullYear()} AI表情包工厂 · Made with ❤️
+            </p>
+          </div>
         </div>
       </footer>
     </>

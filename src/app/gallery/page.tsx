@@ -179,8 +179,17 @@ function GalleryContent() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="搜索文案..."
-                  className="w-full rounded-xl border border-border-light bg-card py-2 pl-9 pr-4 text-[0.85rem] text-text-dark placeholder:text-text-light outline-none transition-shadow duration-200 focus:shadow-md sm:w-52"
+                  className="w-full rounded-xl border border-border-light bg-card py-2 pl-9 pr-9 text-[0.85rem] text-text-dark placeholder:text-text-light outline-none transition-shadow duration-200 focus:shadow-md sm:w-52"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light hover:text-text-dark cursor-pointer border-none bg-transparent"
+                    aria-label="清除搜索"
+                  >
+                    <CloseIcon className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -216,6 +225,12 @@ function GalleryContent() {
               <p className="mt-4 text-[1rem] font-medium text-text-muted">
                 没有匹配的作品
               </p>
+              <button
+                onClick={() => { setSearchQuery(""); setFilterStyle("all"); }}
+                className="mt-4 rounded-xl bg-card-hover px-4 py-2 text-[0.85rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
+              >
+                清除筛选
+              </button>
             </div>
           )}
 
@@ -263,6 +278,7 @@ function GalleryContent() {
                           onClick={() => handleDownload(item)}
                           className="flex h-7 w-7 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-text-dark cursor-pointer"
                           title="下载"
+                          aria-label="下载"
                         >
                           <DownloadIcon className="h-3.5 w-3.5" />
                         </button>
@@ -270,6 +286,7 @@ function GalleryContent() {
                           onClick={() => handleDelete(item.id)}
                           className="flex h-7 w-7 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-savage-accent cursor-pointer"
                           title="删除"
+                          aria-label="删除"
                         >
                           <TrashIcon className="h-3.5 w-3.5" />
                         </button>
@@ -361,6 +378,7 @@ function GalleryContent() {
                 <button
                   onClick={(e) => { e.stopPropagation(); downloadMeme(lightboxItem); }}
                   className="inline-flex items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[0.8rem] text-white transition-colors hover:bg-white/30 cursor-pointer border-none"
+                  aria-label="下载"
                 >
                   <DownloadIcon className="h-4 w-4" />
                   下载
@@ -368,6 +386,7 @@ function GalleryContent() {
                 <button
                   onClick={(e) => { e.stopPropagation(); handleDelete(lightboxItem.id); setLightboxItem(null); }}
                   className="inline-flex items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[0.8rem] text-white transition-colors hover:bg-red-500/50 cursor-pointer border-none"
+                  aria-label="删除"
                 >
                   <TrashIcon className="h-4 w-4" />
                   删除

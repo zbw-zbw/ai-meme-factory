@@ -226,7 +226,7 @@ export default function MemeResultGrid({
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
           >
             <CopyIcon className="h-4 w-4" />
-            复制
+            复制首张
           </button>
           <button
             onClick={onClear}

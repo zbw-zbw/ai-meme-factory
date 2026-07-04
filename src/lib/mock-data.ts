@@ -41,7 +41,7 @@ const mockRules: MockRule[] = [
   {
     keywords: ['下班', '回家', '走'],
     results: {
-      cute: { caption: '好想回家呀', icon: 'fish' },
+      cute: { caption: '好想回家呀', icon: 'heart' },
       savage: { caption: '活还没干完你走什么走', icon: 'fire' },
       chill: { caption: '到点了 先溜了', icon: 'fish' },
       formal: { caption: '今日工作已圆满完成', icon: 'briefcase' },
@@ -53,7 +53,7 @@ const mockRules: MockRule[] = [
       cute: { caption: '周末好开心鸭', icon: 'heart' },
       savage: { caption: '放假也不让你消停', icon: 'fire' },
       chill: { caption: '终于可以躺平了', icon: 'fish' },
-      formal: { caption: '祝您周末愉快', icon: 'heart' },
+      formal: { caption: '祝您周末愉快', icon: 'briefcase' },
     },
   },
   {

@@ -3,6 +3,10 @@
  * Uses SDXL model for high-quality cartoon/meme-style images.
  */
 
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export interface HFConfig {
   apiKey: string;
   model: string;
@@ -51,7 +55,7 @@ export async function generateImage(
   try {
     const url = `https://api-inference.huggingface.co/models/${config.model}`;
 
-    const response = await fetch(url, {
+    const options: RequestInit = {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${config.apiKey}`,
@@ -67,16 +71,21 @@ export async function generateImage(
         },
       }),
       signal: controller.signal,
-    });
+    };
 
-    // Model cold-start: 503 with estimated_time
+    let response = await fetch(url, options);
+
+    // Model cold-start: 503 with estimated_time - wait and retry once
     if (response.status === 503) {
-      const data = await response.json().catch(() => ({}));
-      const estimatedTime = (data as { estimated_time?: number }).estimated_time || 20;
-      throw new HFError(
-        'MODEL_LOADING',
-        `模型正在加载，预计需要 ${Math.ceil(estimatedTime)} 秒`,
-      );
+      const errorBody = await response.json().catch(() => ({}));
+      const estimatedTime =
+        (errorBody as { estimated_time?: number }).estimated_time || 10;
+      await sleep(Math.min(estimatedTime * 1000, 15000));
+      // Retry once
+      response = await fetch(url, options);
+      if (response.status === 503) {
+        throw new HFError('MODEL_LOADING', '模型仍在加载中，请稍后重试');
+      }
     }
 
     // Rate limited
@@ -114,3 +123,31 @@ export async function generateImage(
     clearTimeout(timeoutId);
   }
 }
+
+/**
+ * Run async tasks with a concurrency limit, preserving result order.
+ * Results are placed at their original task index so callers can map by index.
+ */
+async function runWithConcurrency<T>(
+  tasks: (() => Promise<T>)[],
+  limit: number,
+): Promise<T[]> {
+  const results: T[] = new Array(tasks.length);
+  let cursor = 0;
+
+  const run = async (): Promise<void> => {
+    while (cursor < tasks.length) {
+      const index = cursor++;
+      results[index] = await tasks[index]();
+    }
+  };
+
+  const workers = Array.from(
+    { length: Math.min(limit, tasks.length) || 1 },
+    () => run(),
+  );
+  await Promise.all(workers);
+  return results;
+}
+
+export { runWithConcurrency };

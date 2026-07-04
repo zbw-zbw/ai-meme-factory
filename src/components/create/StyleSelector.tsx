@@ -40,6 +40,9 @@ export default function StyleSelector({ selected, onChange }: StyleSelectorProps
       <h2 className="flex items-center gap-2 text-[1.3rem] font-bold text-text-dark">
         <PaletteIcon className="h-5 w-5 text-primary-dark" />
         选择风格
+        <span className="ml-2 text-[0.8rem] font-normal text-text-light">
+          ({selected.length}/4)
+        </span>
       </h2>
       <p className="mt-1 text-[0.85rem] text-text-muted">默认全选，也可以单独挑</p>
 

@@ -43,12 +43,22 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const showToast = useCallback((message: string, type: ToastType = "info") => {
     const id = nextId++;
-    setToasts((prev) => [...prev, { id, message, type }]);
+    const duration = type === "error" ? 4000 : 2500;
 
-    // Auto-dismiss after 2.5s
+    // Max stack of 3: if there are already more than 2, drop the oldest
+    setToasts((prev) => {
+      const next = prev.length > 2 ? prev.slice(1) : prev;
+      return [...next, { id, message, type }];
+    });
+
+    // Auto-dismiss (error: 4s, others: 2.5s)
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 2500);
+    }, duration);
+  }, []);
+
+  const dismiss = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   return (
@@ -57,17 +67,22 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
       {/* Toast container - fixed at bottom center, z-50 */}
       <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`pointer-events-auto rounded-lg px-5 py-3 text-sm font-medium shadow-lg ${typeStyles[toast.type]}`}
-            style={{
-              animation: "toast-in 0.3s ease-out both, toast-out 0.3s ease-in 2.2s both",
-            }}
-          >
-            {toast.message}
-          </div>
-        ))}
+        {toasts.map((toast) => {
+          const duration = toast.type === "error" ? 4000 : 2500;
+          const outDelay = (duration - 300) / 1000;
+          return (
+            <div
+              key={toast.id}
+              onClick={() => dismiss(toast.id)}
+              className={`pointer-events-auto cursor-pointer rounded-lg px-5 py-3 text-sm font-medium shadow-lg ${typeStyles[toast.type]}`}
+              style={{
+                animation: `toast-in 0.3s ease-out both, toast-out 0.3s ease-in ${outDelay}s both`,
+              }}
+            >
+              {toast.message}
+            </div>
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );

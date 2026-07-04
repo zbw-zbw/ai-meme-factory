@@ -9,7 +9,8 @@ import StyleSelector from "@/components/create/StyleSelector";
 import GenerateButton from "@/components/create/GenerateButton";
 import MemeResultGrid from "@/components/create/MemeResultGrid";
 import { useToast } from "@/components/Toast";
-import { renderMemeToCanvas, downloadMeme, saveToGallery, saveBatchToGallery, addRecentPrompt } from "@/lib/meme-renderer";
+import { CloseIcon } from "@/components/Icons";
+import { renderMemeToCanvas, downloadMeme, saveBatchToGallery, addRecentPrompt } from "@/lib/meme-renderer";
 import { ALL_STYLES, styleConfigs } from "@/lib/meme-styles";
 import type { MemeStyle, MemeItem, GenerateStatus, IconName } from "@/types/meme";
 import type { ProgressPhase } from "@/types/create";
@@ -140,7 +141,7 @@ function CreatePageContent() {
       ]);
       showToast("已复制第一张到剪贴板", "success");
     } catch {
-      // Silently fail (no useful fallback for clipboard image)
+      showToast("复制失败", "error");
     }
   }, [results, showToast]);
 
@@ -174,7 +175,6 @@ function CreatePageContent() {
         const newItem = await Promise.resolve(
           renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.icon, meme.imageUrl)
         );
-        saveToGallery(newItem as MemeItem);
         setResults(prev => prev.map(r => r.style === style ? (newItem as MemeItem) : r));
         showToast(`已重新生成${styleConfigs[style].name}`, "success");
       }
@@ -203,9 +203,9 @@ function CreatePageContent() {
           </nav>
 
           {/* Two-column layout */}
-          <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
+          <div className="flex flex-col gap-8 md:flex-row md:gap-8 lg:gap-10">
             {/* Left column: input & controls */}
-            <div className="lg:w-[40%]">
+            <div className="md:w-[40%]">
               <TextInput value={inputText} onChange={setInputText} refreshTrigger={generationCount} />
               <StyleSelector selected={selectedStyles} onChange={setSelectedStyles} />
               <GenerateButton
@@ -217,7 +217,7 @@ function CreatePageContent() {
             </div>
 
             {/* Right column: results */}
-            <div className="lg:w-[60%]">
+            <div className="md:w-[60%]">
               <MemeResultGrid
                 results={results}
                 status={status}
@@ -236,8 +236,15 @@ function CreatePageContent() {
 
           {/* Demo mode banner */}
           {demoMode && (
-            <div className="mt-6 rounded-xl border border-border bg-card-hover px-4 py-3 text-center text-[0.85rem] text-text-muted">
-              当前使用演示模式，接入 AI 后效果更好
+            <div className="mt-6 flex items-center justify-center gap-3 rounded-xl border border-border bg-card-hover px-4 py-3 text-center text-[0.85rem] text-text-muted">
+              <span>当前使用演示模式，接入 AI 后效果更好</span>
+              <button
+                onClick={() => setDemoMode(false)}
+                className="text-text-light hover:text-text-dark cursor-pointer border-none bg-transparent"
+                aria-label="关闭提示"
+              >
+                <CloseIcon className="h-4 w-4" />
+              </button>
             </div>
           )}
         </div>

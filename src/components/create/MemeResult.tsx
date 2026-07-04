@@ -64,7 +64,7 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
       {/* Regenerating spinner overlay */}
       {isRegenerating && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-2xl">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       )}
 
@@ -83,6 +83,7 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
               disabled={isRegenerating}
               className="inline-flex items-center gap-1 rounded-lg bg-card-hover px-2 py-1 text-[0.7rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               title="重新生成"
+              aria-label="重新生成"
             >
               <RefreshIcon className="h-3.5 w-3.5" />
             </button>
@@ -93,6 +94,7 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
             onClick={handleShare}
             className="inline-flex items-center gap-1.5 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
             title="分享"
+            aria-label="分享表情包"
           >
             <ShareIcon className="h-4 w-4" />
           </button>
@@ -100,6 +102,7 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
             onClick={handleCopy}
             className="inline-flex items-center gap-1.5 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
             title="复制"
+            aria-label="复制表情包"
           >
             <CopyIcon className="h-4 w-4" />
           </button>
