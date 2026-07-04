@@ -18,6 +18,7 @@ import {
   ArrowRightIcon,
   SparklesIcon,
   SearchIcon,
+  CloseIcon,
 } from "@/components/Icons";
 import { useToast } from "@/components/Toast";
 
@@ -43,6 +44,7 @@ function GalleryContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [, setTick] = useState(0);
+  const [lightboxItem, setLightboxItem] = useState<MemeItem | null>(null);
 
   const { showToast } = useToast();
 
@@ -234,13 +236,19 @@ function GalleryContent() {
                     }
                   >
                     {/* Image */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.dataUrl}
-                      alt={item.caption}
-                      className="aspect-square w-full object-cover"
-                      loading="lazy"
-                    />
+                    <button
+                      onClick={() => setLightboxItem(item)}
+                      className="block w-full cursor-pointer border-none p-0 bg-transparent"
+                      title="点击放大"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.dataUrl}
+                        alt={item.caption}
+                        className="aspect-square w-full object-cover"
+                        loading="lazy"
+                      />
+                    </button>
 
                     {/* Info bar */}
                     <div className="flex items-center justify-between px-3 py-2">
@@ -319,6 +327,52 @@ function GalleryContent() {
               >
                 确认清空
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox overlay */}
+      {lightboxItem && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 animate-[fade-in_0.2s_ease-out]"
+          onClick={() => setLightboxItem(null)}
+        >
+          <div
+            className="relative max-h-[90vh] max-w-[90vw]"
+            onClick={(e) => e.stopPropagation()}
+            style={{ animation: 'bounce-in 0.3s ease-out' }}
+          >
+            <button
+              onClick={() => setLightboxItem(null)}
+              className="absolute -top-3 -right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-text-dark shadow-md transition-colors hover:bg-white cursor-pointer border-none"
+            >
+              <CloseIcon className="h-5 w-5" />
+            </button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={lightboxItem.dataUrl}
+              alt={lightboxItem.caption}
+              className="max-h-[85vh] max-w-[85vw] rounded-2xl shadow-2xl object-contain"
+            />
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between rounded-b-2xl bg-black/50 px-4 py-3 backdrop-blur-sm">
+              <p className="truncate text-[0.9rem] text-white">{lightboxItem.caption}</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); downloadMeme(lightboxItem); }}
+                  className="inline-flex items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[0.8rem] text-white transition-colors hover:bg-white/30 cursor-pointer border-none"
+                >
+                  <DownloadIcon className="h-4 w-4" />
+                  下载
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDelete(lightboxItem.id); setLightboxItem(null); }}
+                  className="inline-flex items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[0.8rem] text-white transition-colors hover:bg-red-500/50 cursor-pointer border-none"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                  删除
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import type { MemeItem, MemeStyle } from "@/types/meme";
 import { styleConfigs } from "@/lib/meme-styles";
 import { downloadMeme } from "@/lib/meme-renderer";
 import { useToast } from "@/components/Toast";
-import { DownloadIcon, CopyIcon, RefreshIcon } from "@/components/Icons";
+import { DownloadIcon, CopyIcon, RefreshIcon, ShareIcon } from "@/components/Icons";
 import MemeCanvas from "./MemeCanvas";
 
 interface MemeResultProps {
@@ -26,6 +26,30 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
       showToast("已复制到剪贴板");
     } catch {
       showToast("复制失败", "error");
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      const response = await fetch(item.dataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `${item.style}-${item.caption.slice(0, 12)}.jpg`, { type: blob.type });
+      
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: `${config.name}表情包 - ${item.caption}`,
+          text: item.caption,
+          files: [file],
+        });
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+        showToast("已复制到剪贴板，可手动分享", "success");
+      }
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        showToast("分享失败", "error");
+      }
     }
   };
 
@@ -65,6 +89,13 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
           )}
         </div>
         <div className="flex items-center gap-1.5">
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
+            title="分享"
+          >
+            <ShareIcon className="h-4 w-4" />
+          </button>
           <button
             onClick={handleCopy}
             className="inline-flex items-center gap-1.5 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"

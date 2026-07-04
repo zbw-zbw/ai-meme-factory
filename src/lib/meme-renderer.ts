@@ -27,6 +27,26 @@ function drawIcon(ctx: CanvasRenderingContext2D, icon: IconName, cx: number, cy:
   ctx.restore();
 }
 
+function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, color: string) {
+  ctx.save();
+  const outerR = (size * DPR) / 2;
+  const innerR = outerR * 0.4;
+  ctx.translate(cx * DPR, cy * DPR);
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? outerR : innerR;
+    const angle = (Math.PI / 5) * i - Math.PI / 2;
+    const x = Math.cos(angle) * r;
+    const y = Math.sin(angle) * r;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const chars = text.split('');
   const lines: string[] = [];
@@ -74,6 +94,16 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       drawIcon(ctx, 'heart', p.x * size, p.y * size, p.s, config.accentColor);
     }
     ctx.globalAlpha = 1;
+    // Add sparkle/star decorations
+    ctx.globalAlpha = 0.06;
+    const starPositions = [
+      { x: 0.25, y: 0.22, s: 16 }, { x: 0.75, y: 0.18, s: 14 },
+      { x: 0.88, y: 0.55, s: 18 }, { x: 0.15, y: 0.65, s: 12 },
+    ];
+    for (const p of starPositions) {
+      drawStar(ctx, p.x * size, p.y * size, p.s, config.accentColor);
+    }
+    ctx.globalAlpha = 1;
     ctx.globalAlpha = 0.15;
     ctx.strokeStyle = config.accentColor;
     ctx.lineWidth = 3 * DPR;
@@ -107,6 +137,21 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
     ctx.beginPath(); ctx.moveTo(inset, size * DPR - inset - bLen); ctx.lineTo(inset, size * DPR - inset); ctx.lineTo(inset + bLen, size * DPR - inset); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(size * DPR - inset - bLen, size * DPR - inset); ctx.lineTo(size * DPR - inset, size * DPR - inset); ctx.lineTo(size * DPR - inset, size * DPR - inset - bLen); ctx.stroke();
     ctx.globalAlpha = 1;
+    // Add lightning bolt accents
+    ctx.globalAlpha = 0.08;
+    ctx.strokeStyle = config.accentColor;
+    ctx.lineWidth = 2 * DPR;
+    for (let i = 0; i < 3; i++) {
+      const sx = (0.15 + i * 0.35) * size * DPR;
+      const sy = (0.3 + i * 0.15) * size * DPR;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx - 8 * DPR, sy + 12 * DPR);
+      ctx.lineTo(sx + 4 * DPR, sy + 12 * DPR);
+      ctx.lineTo(sx - 4 * DPR, sy + 20 * DPR);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
   } else if (style === 'chill') {
     ctx.globalAlpha = 0.1;
     ctx.fillStyle = config.accentColor;
@@ -134,6 +179,14 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+    // Add fish silhouettes
+    ctx.globalAlpha = 0.08;
+    for (let i = 0; i < 3; i++) {
+      const fx = (0.2 + i * 0.3) * size;
+      const fy = (0.4 + (i % 2) * 0.15) * size;
+      drawIcon(ctx, 'fish', fx, fy, 20, config.accentColor);
+    }
+    ctx.globalAlpha = 1;
   } else if (style === 'formal') {
     ctx.globalAlpha = 0.05;
     ctx.strokeStyle = config.accentColor;
@@ -152,6 +205,18 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
     ctx.strokeRect(12 * DPR, 12 * DPR, (size - 24) * DPR, (size - 24) * DPR);
     ctx.lineWidth = 1 * DPR;
     ctx.strokeRect(18 * DPR, 18 * DPR, (size - 36) * DPR, (size - 36) * DPR);
+    ctx.globalAlpha = 1;
+    // Subtle diagonal "MEME" watermark
+    ctx.globalAlpha = 0.03;
+    ctx.save();
+    ctx.font = `900 ${80 * DPR}px "Noto Sans SC", sans-serif`;
+    ctx.fillStyle = config.accentColor;
+    ctx.translate(size * DPR * 0.5, size * DPR * 0.5);
+    ctx.rotate(-Math.PI / 6);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('MEME', 0, 0);
+    ctx.restore();
     ctx.globalAlpha = 1;
   }
 }
@@ -267,6 +332,13 @@ async function renderCanvasOnly(
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Failed to get canvas context');
 
+  // Rounded corner clipping
+  const cornerRadius = 24 * DPR;
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(0, 0, displaySize * DPR, displaySize * DPR, cornerRadius);
+  ctx.clip();
+
   drawBackground(ctx, style, displaySize);
 
   // Icon badge
@@ -286,6 +358,8 @@ async function renderCanvasOnly(
   drawCaption(ctx, style, caption, displaySize);
   drawLabel(ctx, style, displaySize);
   drawBrandWatermark(ctx, style, displaySize);
+
+  ctx.restore();
 
   return {
     id: `meme-${style}-${Date.now()}`,
@@ -326,6 +400,13 @@ function renderWithAIImage(
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
+      // Rounded corner clipping
+      const cornerRadius = 24 * DPR;
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(0, 0, displaySize * DPR, displaySize * DPR, cornerRadius);
+      ctx.clip();
+
       // Draw AI image as full background (cover mode)
       const imgRatio = img.width / img.height;
       let sx = 0, sy = 0, sw = img.width, sh = img.height;
@@ -403,6 +484,8 @@ function renderWithAIImage(
 
       // Watermark
       drawBrandWatermark(ctx, style, displaySize);
+
+      ctx.restore();
 
       resolve({
         id: `meme-${style}-${Date.now()}`,
@@ -538,4 +621,24 @@ export function addRecentPrompt(text: string): void {
     const updated = [text, ...existing].slice(0, 5);
     localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
   } catch { /* ignore */ }
+}
+
+/**
+ * Pre-render example memes for showcase (e.g., Hero, Demo sections).
+ * Returns an array of 4 MemeItems, one per style.
+ */
+export async function preRenderExamples(): Promise<MemeItem[]> {
+  if (typeof document === 'undefined') return [];
+  await document.fonts.ready;
+
+  const examples = [
+    { text: '不想上班', style: 'cute' as MemeStyle, caption: '好想抱抱毛绒玩具', icon: 'heart' as IconName },
+    { text: '不想上班', style: 'savage' as MemeStyle, caption: '上班是不可能上班的', icon: 'fire' as IconName },
+    { text: '不想上班', style: 'chill' as MemeStyle, caption: '摸鱼一时爽 一直摸一直爽', icon: 'fish' as IconName },
+    { text: '不想上班', style: 'formal' as MemeStyle, caption: '关于今日出勤的补充说明', icon: 'briefcase' as IconName },
+  ];
+
+  return Promise.all(
+    examples.map(ex => renderCanvasOnly(ex.text, ex.style, ex.caption, ex.icon))
+  );
 }

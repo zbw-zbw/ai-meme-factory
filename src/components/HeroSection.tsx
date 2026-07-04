@@ -1,46 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { SparklesIcon, ImageIcon } from "@/components/Icons";
-
-/* Minimal floating decorations - just 3 subtle icons */
-const decorations = [
-  { Icon: SparklesIcon, top: "20%", left: "10%", delay: "0s", color: "#FBBF24", opacity: 0.35 },
-  { Icon: SparklesIcon, top: "15%", right: "12%", delay: "1.2s", color: "#EC4899", opacity: 0.25 },
-  { Icon: SparklesIcon, bottom: "25%", left: "18%", delay: "0.6s", color: "#F59E0B", opacity: 0.3 },
-];
+import { preRenderExamples } from "@/lib/meme-renderer";
+import type { MemeItem } from "@/types/meme";
 
 export default function HeroSection() {
+  const [examples, setExamples] = useState<MemeItem[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    preRenderExamples().then(setExamples);
+  }, []);
+
   return (
     <section className="noise-bg relative flex min-h-[calc(100svh-64px)] flex-col items-center justify-center overflow-hidden px-6 pb-20 pt-24 md:px-8">
       {/* Mobile decorative blobs */}
       <div className="pointer-events-none absolute top-[15%] -left-10 h-32 w-32 rounded-full bg-primary-light/20 blur-2xl md:hidden" />
       <div className="pointer-events-none absolute bottom-[20%] -right-8 h-24 w-24 rounded-full bg-accent-light/20 blur-2xl md:hidden" />
       <div className="pointer-events-none absolute top-[60%] left-[5%] h-20 w-20 rounded-full bg-chill-accent/15 blur-2xl md:hidden" />
-
-      {/* Floating decorations - hidden on mobile for cleaner look */}
-      {decorations.map((item, i) => {
-        const { Icon } = item;
-        return (
-          <span
-            key={i}
-            className="pointer-events-none absolute hidden select-none md:block animate-float"
-            style={{
-              top: item.top,
-              left: item.left,
-              right: item.right,
-              animationDelay: item.delay,
-            }}
-          >
-            <Icon
-              width={24}
-              height={24}
-              className="opacity-35"
-              style={{ color: item.color }}
-            />
-          </span>
-        );
-      })}
 
       {/* Content with staggered entrance */}
       <div className="relative z-10 flex flex-col items-center text-center">
@@ -73,7 +53,6 @@ export default function HeroSection() {
           className="flex flex-col items-center gap-4 animate-slide-up sm:flex-row sm:gap-5"
           style={{ animationDelay: "0.55s" }}
         >
-          {/* Primary CTA */}
           <Link
             href="/create"
             className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-center text-[1.05rem] font-bold text-white no-underline transition-colors hover:bg-primary-dark sm:px-10 sm:text-[1.15rem]"
@@ -82,7 +61,6 @@ export default function HeroSection() {
             开始制作
           </Link>
 
-          {/* Secondary CTA - gallery link */}
           <Link
             href="/gallery"
             className="inline-flex items-center gap-2 rounded-xl border-2 border-border px-7 py-3.5 text-center text-[1.05rem] font-medium text-text-muted no-underline transition-colors hover:border-primary hover:text-text-dark sm:px-9 sm:text-[1.05rem]"
@@ -92,6 +70,33 @@ export default function HeroSection() {
           </Link>
         </div>
       </div>
+
+      {/* Real meme examples showcase */}
+      {mounted && examples.length > 0 && (
+        <div className="relative z-10 mt-14 w-full max-w-[700px] animate-slide-up" style={{ animationDelay: "0.7s" }}>
+          <div className="grid grid-cols-4 gap-3 sm:gap-4">
+            {examples.map((item, i) => (
+              <div
+                key={item.id}
+                className="overflow-hidden rounded-xl shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                style={{
+                  animation: `bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${0.8 + i * 0.12}s both`,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.dataUrl}
+                  alt={item.caption}
+                  className="aspect-square w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-center text-[0.75rem] text-text-light">
+            实际生成效果展示
+          </p>
+        </div>
+      )}
     </section>
   );
 }

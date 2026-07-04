@@ -80,6 +80,17 @@ export default function MemeResultGrid({
           <p className="mt-3 text-[0.95rem] text-text-muted">
             输入文字，点击生成，表情包马上就来
           </p>
+          {/* Quick example prompts */}
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
+            {["好累啊", "不想上班", "今天也要加油", "干饭人干饭魂"].map((prompt) => (
+              <span
+                key={prompt}
+                className="rounded-full bg-card-hover px-3.5 py-1.5 text-[0.8rem] text-text-muted transition-colors hover:bg-primary-light/30 hover:text-primary-dark cursor-default"
+              >
+                {prompt}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     );
