@@ -203,3 +203,32 @@ body {
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
+
+/* ===== Dark mode (prepared for future toggle) ===== */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --color-bg: #1C1917;
+    --color-bg-warm: #292524;
+    --color-card: #292524;
+    --color-card-hover: #44403C;
+    --color-text-dark: #FAFAF9;
+    --color-text-muted: #A8A29E;
+    --color-text-light: #78716C;
+    --color-border: #44403C;
+    --color-border-light: #292524;
+  }
+}
+
+/* ===== Screen reader only (visually hidden) ===== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

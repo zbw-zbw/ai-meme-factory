@@ -65,8 +65,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      {/* Toast container - fixed at bottom center, z-50 */}
-      <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2 pointer-events-none">
+      {/* Toast container - fixed at bottom center, z-[10000] */}
+      <div className="fixed bottom-6 left-1/2 z-[10000] flex -translate-x-1/2 flex-col items-center gap-2 pointer-events-none">
         {toasts.map((toast) => {
           const duration = toast.type === "error" ? 4000 : 2500;
           const outDelay = (duration - 300) / 1000;

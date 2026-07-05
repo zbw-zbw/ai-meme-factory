@@ -83,6 +83,96 @@ const mockRules: MockRule[] = [
       formal: { caption: '建议关注工作生活平衡', icon: 'briefcase' },
     },
   },
+  {
+    keywords: ['饿'],
+    results: {
+      cute: { caption: '好饿好想吃肉肉', icon: 'heart' },
+      savage: { caption: '饿到能吃下一头牛', icon: 'fire' },
+      chill: { caption: '饿了就吃 管他呢', icon: 'fish' },
+      formal: { caption: '关于用餐时间的紧急通知', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['困'],
+    results: {
+      cute: { caption: '困困 想睡觉觉了', icon: 'heart' },
+      savage: { caption: '困死了我先睡了拜拜', icon: 'fire' },
+      chill: { caption: '困了就趴会儿', icon: 'fish' },
+      formal: { caption: '关于适时休息的管理建议', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['累'],
+    results: {
+      cute: { caption: '累了要抱抱嘛', icon: 'heart' },
+      savage: { caption: '累到原地爆炸', icon: 'fire' },
+      chill: { caption: '累了就躺平吧', icon: 'fish' },
+      formal: { caption: '关于工作负荷的评估报告', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['无聊'],
+    results: {
+      cute: { caption: '好无聊陪人家玩嘛', icon: 'heart' },
+      savage: { caption: '无聊到数头发', icon: 'fire' },
+      chill: { caption: '无聊也是一种境界', icon: 'fish' },
+      formal: { caption: '关于闲暇时间的利用建议', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['开心'],
+    results: {
+      cute: { caption: '开心到转圈圈啦', icon: 'heart' },
+      savage: { caption: '笑什么笑 有什么好笑的', icon: 'fire' },
+      chill: { caption: '开心就好 别想太多', icon: 'fish' },
+      formal: { caption: '关于保持积极心态的倡议', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['减肥'],
+    results: {
+      cute: { caption: '不吃饱怎么减肥呀', icon: 'heart' },
+      savage: { caption: '减肥从明天开始永远是明天', icon: 'fire' },
+      chill: { caption: '吃完这顿再减', icon: 'fish' },
+      formal: { caption: '关于健康管理计划的执行说明', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['考试'],
+    results: {
+      cute: { caption: '考试加油加油呀', icon: 'heart' },
+      savage: { caption: '考试什么的毁灭吧', icon: 'fire' },
+      chill: { caption: '考完就解放了再忍忍', icon: 'fish' },
+      formal: { caption: '关于考试期间注意事项的通知', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['恋爱'],
+    results: {
+      cute: { caption: '想谈恋爱了好想有个人抱', icon: 'heart' },
+      savage: { caption: '单身保平安懂不懂', icon: 'fire' },
+      chill: { caption: '随缘吧不强求', icon: 'fish' },
+      formal: { caption: '关于建立亲密关系的可行性分析', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['游戏'],
+    results: {
+      cute: { caption: '打游戏好开心呀', icon: 'heart' },
+      savage: { caption: '游戏输了怪队友就完了', icon: 'fire' },
+      chill: { caption: '再来一把最后一把', icon: 'fish' },
+      formal: { caption: '关于娱乐时间分配的管理规定', icon: 'briefcase' },
+    },
+  },
+  {
+    keywords: ['天气'],
+    results: {
+      cute: { caption: '今天天气真好想出门', icon: 'heart' },
+      savage: { caption: '天气再好也要上班认命吧', icon: 'fire' },
+      chill: { caption: '适合发呆的一天', icon: 'fish' },
+      formal: { caption: '关于天气状况的出行提醒', icon: 'briefcase' },
+    },
+  },
 ];
 
 const defaultResults: Record<MemeStyle, MockResult> = {

@@ -9,6 +9,8 @@ import {
   deleteGalleryItem,
   clearGallery,
   downloadMeme,
+  toggleFavorite,
+  getFavoriteIds,
 } from "@/lib/meme-renderer";
 import type { MemeItem, MemeStyle } from "@/types/meme";
 import {
@@ -19,6 +21,7 @@ import {
   SparklesIcon,
   SearchIcon,
   CloseIcon,
+  HeartIcon,
 } from "@/components/Icons";
 import { useToast } from "@/components/Toast";
 
@@ -45,11 +48,14 @@ function GalleryContent() {
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [, setTick] = useState(0);
   const [lightboxItem, setLightboxItem] = useState<MemeItem | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   const { showToast } = useToast();
 
   useEffect(() => {
     setItems(getGalleryItems());
+    setFavorites(getFavoriteIds());
     setLoaded(true);
   }, []);
 
@@ -58,6 +64,32 @@ function GalleryContent() {
     const timer = setInterval(() => setTick(t => t + 1), 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // ESC to close lightbox or confirm dialog
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (lightboxItem) {
+        setLightboxItem(null);
+      } else if (showConfirmClear) {
+        setShowConfirmClear(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxItem, showConfirmClear]);
+
+  // Lock body scroll when lightbox or dialog is open
+  useEffect(() => {
+    if (lightboxItem || showConfirmClear) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [lightboxItem, showConfirmClear]);
 
   const handleDelete = useCallback((id: string) => {
     deleteGalleryItem(id);
@@ -76,20 +108,31 @@ function GalleryContent() {
     downloadMeme(item);
   }, []);
 
+  const handleToggleFavorite = useCallback((id: string) => {
+    const isFav = toggleFavorite(id);
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (isFav) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }, []);
+
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const matchStyle = filterStyle === "all" || item.style === filterStyle;
       const matchSearch =
         searchQuery.trim() === "" ||
         item.caption.toLowerCase().includes(searchQuery.toLowerCase().trim());
-      return matchStyle && matchSearch;
+      const matchFavorite = !showFavoritesOnly || favorites.has(item.id);
+      return matchStyle && matchSearch && matchFavorite;
     });
-  }, [items, filterStyle, searchQuery]);
+  }, [items, filterStyle, searchQuery, showFavoritesOnly, favorites]);
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-bg pt-20 pb-12">
+      <main id="main-content" className="min-h-screen bg-bg pt-20 pb-12">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
           {/* Breadcrumb */}
           <nav className="mb-6 flex items-center gap-2 text-[0.85rem]">
@@ -128,6 +171,18 @@ function GalleryContent() {
                   继续创作
                 </Link>
                 <button
+                  onClick={() => {
+                    filteredItems.forEach((item, i) => {
+                      setTimeout(() => downloadMeme(item), i * 300);
+                    });
+                    showToast("已开始下载", "success");
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
+                >
+                  <DownloadIcon className="h-4 w-4" />
+                  下载全部
+                </button>
+                <button
                   onClick={() => setShowConfirmClear(true)}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-savage-accent shadow-sm border border-border-light transition-all duration-200 hover:shadow-md cursor-pointer"
                 >
@@ -152,6 +207,16 @@ function GalleryContent() {
                   }`}
                 >
                   全部
+                </button>
+                <button
+                  onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                  className={`rounded-full px-4 py-1.5 text-[0.8rem] font-medium transition-colors duration-200 cursor-pointer border-none ${
+                    showFavoritesOnly
+                      ? "bg-accent text-white"
+                      : "bg-card text-text-muted hover:text-text-dark"
+                  }`}
+                >
+                  收藏
                 </button>
                 {ALL_STYLE_KEYS.map((key) => {
                   const config = styleConfigs[key];
@@ -275,6 +340,17 @@ function GalleryContent() {
                       </span>
                       <div className="flex gap-1">
                         <button
+                          onClick={() => handleToggleFavorite(item.id)}
+                          className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors cursor-pointer ${
+                            favorites.has(item.id)
+                              ? "bg-accent-light/20 text-accent"
+                              : "bg-card-hover text-text-muted hover:text-accent"
+                          }`}
+                          aria-label={favorites.has(item.id) ? "取消收藏" : "收藏"}
+                        >
+                          <HeartIcon className="h-3.5 w-3.5" />
+                        </button>
+                        <button
                           onClick={() => handleDownload(item)}
                           className="flex h-7 w-7 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-text-dark cursor-pointer"
                           title="下载"
@@ -323,8 +399,18 @@ function GalleryContent() {
 
       {/* Confirm clear dialog overlay */}
       {showConfirmClear && (
-        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/40 animate-[fade-in_0.2s_ease-out]">
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl" style={{ animation: 'bounce-in 0.3s ease-out' }}>
+        <div
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/40 animate-[fade-in_0.2s_ease-out]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="确认清空"
+          onClick={() => setShowConfirmClear(false)}
+        >
+          <div
+            className="mx-4 w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl"
+            style={{ animation: 'bounce-in 0.3s ease-out' }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-[1.05rem] font-bold text-text-dark">
               确认清空
             </h3>
@@ -353,6 +439,9 @@ function GalleryContent() {
       {lightboxItem && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 animate-[fade-in_0.2s_ease-out]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="图片预览"
           onClick={() => setLightboxItem(null)}
         >
           <div
@@ -375,6 +464,18 @@ function GalleryContent() {
             <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between rounded-b-2xl bg-black/50 px-4 py-3 backdrop-blur-sm">
               <p className="truncate text-[0.9rem] text-white">{lightboxItem.caption}</p>
               <div className="flex gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleToggleFavorite(lightboxItem.id); }}
+                  className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-[0.8rem] transition-colors cursor-pointer border-none ${
+                    favorites.has(lightboxItem.id)
+                      ? "bg-accent/40 text-white"
+                      : "bg-white/20 text-white hover:bg-white/30"
+                  }`}
+                  aria-label={favorites.has(lightboxItem.id) ? "取消收藏" : "收藏"}
+                >
+                  <HeartIcon className="h-4 w-4" />
+                  {favorites.has(lightboxItem.id) ? "已收藏" : "收藏"}
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); downloadMeme(lightboxItem); }}
                   className="inline-flex items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[0.8rem] text-white transition-colors hover:bg-white/30 cursor-pointer border-none"

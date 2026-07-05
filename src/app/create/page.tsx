@@ -62,11 +62,15 @@ function CreatePageContent() {
     setResults([]);
     setErrorMessage("");
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: inputText.trim(), styles: selectedStyles }),
+        signal: controller.signal,
       });
 
       const data: ApiResponse = await response.json();
@@ -101,10 +105,16 @@ function CreatePageContent() {
       setResults(newResults);
       setStatus("done");
       setProgressPhase("done");
-    } catch {
-      setErrorMessage("网络错误，请检查连接后重试");
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        setErrorMessage("请求超时，请重试");
+      } else {
+        setErrorMessage("网络错误，请检查连接后重试");
+      }
       setStatus("error");
       setProgressPhase("error");
+    } finally {
+      clearTimeout(timeoutId);
     }
   }, [canGenerate, status, inputText, selectedStyles]);
 
@@ -163,11 +173,16 @@ function CreatePageContent() {
   const handleRegenerateSingle = useCallback(async (style: MemeStyle) => {
     if (regeneratingStyle === style) return; // prevent double click
     setRegeneratingStyle(style);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: inputText.trim(), styles: [style] }),
+        signal: controller.signal,
       });
       const data = await response.json();
       if (data.success && data.data?.memes?.[0]) {
@@ -178,9 +193,14 @@ function CreatePageContent() {
         setResults(prev => prev.map(r => r.style === style ? (newItem as MemeItem) : r));
         showToast(`已重新生成${styleConfigs[style].name}`, "success");
       }
-    } catch {
-      showToast("重新生成失败", "error");
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        showToast("请求超时，请重试", "error");
+      } else {
+        showToast("重新生成失败", "error");
+      }
     } finally {
+      clearTimeout(timeoutId);
       setRegeneratingStyle(null);
     }
   }, [inputText, showToast, regeneratingStyle]);
@@ -188,7 +208,7 @@ function CreatePageContent() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-bg pt-20 pb-12">
+      <main id="main-content" className="min-h-screen bg-bg pt-20 pb-12">
         {/* Breadcrumb */}
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
           <nav className="mb-6 flex items-center gap-2 text-[0.85rem]">

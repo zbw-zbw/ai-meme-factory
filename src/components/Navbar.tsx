@@ -29,16 +29,25 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
+  // ESC to close mobile menu
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && menuOpen) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
+
+  // 滚动时增加背景不透明度和阴影
+  const navbarBg = scrolled
+    ? "bg-bg/95 shadow-md backdrop-blur-xl"
+    : "bg-bg/80 backdrop-blur-md";
+
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ${
-        scrolled ? "shadow-md" : "shadow-none"
-      }`}
-      style={{
-        backgroundColor: "rgba(255, 251, 235, 0.85)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navbarBg}`}
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-3">
         {/* Logo */}

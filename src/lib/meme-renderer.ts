@@ -603,6 +603,35 @@ export function clearGallery(): void {
   localStorage.removeItem(GALLERY_KEY);
 }
 
+// ===== Favorites Storage (localStorage) =====
+const FAVORITES_KEY = 'ai-meme-factory-favorites';
+
+export function getFavoriteIds(): Set<string> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const data = localStorage.getItem(FAVORITES_KEY);
+    return data ? new Set(JSON.parse(data)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+export function toggleFavorite(id: string): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const favorites = getFavoriteIds();
+    if (favorites.has(id)) {
+      favorites.delete(id);
+    } else {
+      favorites.add(id);
+    }
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favorites]));
+    return favorites.has(id);
+  } catch {
+    return false;
+  }
+}
+
 // ===== Recent Prompts Storage (localStorage) =====
 const RECENT_KEY = 'ai-meme-factory-recent';
 

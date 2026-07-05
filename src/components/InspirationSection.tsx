@@ -14,17 +14,10 @@ const inspirations = [
   { text: "摸鱼被抓了" },
 ];
 
-/* Stagger delay classes */
-const pillDelays = [
-  "animate-bounce-in [animation-delay:0s]",
-  "animate-bounce-in [animation-delay:0.06s]",
-  "animate-bounce-in [animation-delay:0.12s]",
-  "animate-bounce-in [animation-delay:0.18s]",
-  "animate-bounce-in [animation-delay:0.24s]",
-  "animate-bounce-in [animation-delay:0.30s]",
-  "animate-bounce-in [animation-delay:0.36s]",
-  "animate-bounce-in [animation-delay:0.42s]",
-];
+/* Stagger delay (ms) applied via inline transitionDelay so the fade-in
+   is driven by the surrounding FadeInWrapper instead of a CSS animation
+   that plays while the wrapper is still opacity:0. */
+const pillDelays = [0, 60, 120, 180, 240, 300, 360, 420];
 
 export default function InspirationSection() {
   return (
@@ -47,7 +40,8 @@ export default function InspirationSection() {
               <Link
                 key={item.text}
                 href={`/create?text=${encodeURIComponent(item.text)}`}
-                className={`inspiration-pill inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-200 hover:border-primary hover:bg-card-hover hover:shadow-md ${pillDelays[i] ?? ""}`}
+                className="inspiration-pill inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 hover:border-primary hover:bg-card-hover hover:shadow-md"
+                style={{ transitionDelay: `${pillDelays[i] ?? 0}ms` }}
               >
                 {item.text}
               </Link>
