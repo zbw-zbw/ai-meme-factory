@@ -39,23 +39,21 @@ export default function InspirationSection() {
   return (
     <section className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[1200px]">
-        <FadeInWrapper className="mb-3">
-          <div className="flex items-center justify-center gap-3">
-            <h2 className="font-display text-[1.75rem] font-bold sm:text-[2rem]">
-              更多灵感
+        <FadeInWrapper>
+          <div className="mb-8 text-center">
+            <h2 className="font-display text-[1.75rem] font-normal text-text-dark sm:text-[2rem]">
+              灵感参考
             </h2>
+            <p className="mt-2 text-[0.95rem] text-text-muted">
+              看看大家都在生成什么
+            </p>
             <button
               onClick={handleShuffle}
-              className="ml-auto text-[0.85rem] text-text-muted hover:text-text-dark cursor-pointer border-none bg-transparent whitespace-nowrap"
+              className="mt-3 inline-flex items-center gap-1 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
             >
               换一批
             </button>
           </div>
-        </FadeInWrapper>
-        <FadeInWrapper className="mb-10 text-center">
-          <p className="text-[0.95rem] text-text-muted">
-            看看大家都在生成什么
-          </p>
         </FadeInWrapper>
 
         <FadeInWrapper>

@@ -20,6 +20,11 @@ function CountUp({ target, duration = 1500 }: { target: number; duration?: numbe
       ([entry]) => {
         if (entry.isIntersecting && !started.current) {
           started.current = true;
+          // Skip count-up for reduced motion
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            setCount(target);
+            return;
+          }
           const start = Date.now();
           const animate = () => {
             const elapsed = Date.now() - start;
@@ -60,7 +65,7 @@ export default function StatsSection() {
               >
                 <div className="flex items-baseline gap-0.5">
                   <span className="font-display text-[3rem] font-normal gradient-title sm:text-[3.5rem]">
-                    <CountUp target={stat.value} />
+                    <CountUp target={stat.value} duration={stat.value <= 10 ? 600 : 1500} />
                   </span>
                   <span className="text-[1.1rem] font-bold text-text-muted">
                     {stat.suffix}

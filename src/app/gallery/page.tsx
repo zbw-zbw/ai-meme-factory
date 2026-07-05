@@ -22,6 +22,7 @@ import {
   SearchIcon,
   CloseIcon,
   HeartIcon,
+  CopyIcon,
 } from "@/components/Icons";
 import { useToast } from "@/components/Toast";
 
@@ -116,6 +117,17 @@ function GalleryContent() {
   const handleDownload = useCallback((item: MemeItem) => {
     downloadMeme(item);
   }, []);
+
+  const handleCopy = useCallback(async (item: MemeItem) => {
+    try {
+      const response = await fetch(item.dataUrl);
+      const blob = await response.blob();
+      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      showToast("已复制到剪贴板");
+    } catch {
+      showToast("复制失败", "error");
+    }
+  }, [showToast]);
 
   const handleToggleFavorite = useCallback((id: string) => {
     const isFav = toggleFavorite(id);
@@ -358,6 +370,14 @@ function GalleryContent() {
                           aria-label={favorites.has(item.id) ? "取消收藏" : "收藏"}
                         >
                           <HeartIcon className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleCopy(item)}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
+                          aria-label="复制图片"
+                          title="复制"
+                        >
+                          <CopyIcon className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => handleDownload(item)}

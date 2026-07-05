@@ -24,6 +24,14 @@ export default function DemoSection() {
   }, []);
 
   const startTyping = useCallback(() => {
+    // Skip typing animation for reduced motion users
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayText(demoText);
+      setTypingDone(true);
+      setBtnActive(true);
+      setTimeout(() => setShowCards(true), 300);
+      return;
+    }
     let charIndex = 0;
     intervalRef.current = setInterval(() => {
       charIndex++;

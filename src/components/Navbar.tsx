@@ -53,7 +53,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 no-underline">
           <LogoIcon className="h-7 w-7 text-primary-dark" />
-          <span className="gradient-logo text-lg font-bold">AI表情包工厂</span>
+          <span className="gradient-title text-lg font-bold">AI表情包工厂</span>
         </Link>
 
         {/* Desktop nav */}

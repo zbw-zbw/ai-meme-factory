@@ -526,15 +526,34 @@ export function renderMemeToCanvas(
   return renderCanvasOnly(text, style, caption, icon);
 }
 
-export function downloadMeme(item: MemeItem): void {
-  const a = document.createElement('a');
-  a.href = item.dataUrl;
-  // Use caption snippet for readable filename
-  const captionSlug = item.caption.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '').slice(0, 12) || 'meme';
-  a.download = `${item.style}-${captionSlug}.jpg`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+export function downloadMeme(item: MemeItem, format: "jpeg" | "png" = "jpeg"): void {
+  if (typeof document === "undefined") return;
+  const link = document.createElement("a");
+  const ext = format === "png" ? "png" : "jpg";
+
+  // If PNG requested and we have a JPEG data URL, we need to re-render
+  // The dataUrl is already JPEG, so for PNG we need to convert via canvas
+  if (format === "png" && item.dataUrl.startsWith("data:image/jpeg")) {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        link.href = canvas.toDataURL("image/png");
+        link.download = `${item.caption.slice(0, 12)}-${item.style}.${ext}`;
+        link.click();
+      }
+    };
+    img.src = item.dataUrl;
+    return;
+  }
+
+  link.href = item.dataUrl;
+  link.download = `${item.caption.slice(0, 12)}-${item.style}.${ext}`;
+  link.click();
 }
 
 // ===== Gallery Storage (localStorage) =====

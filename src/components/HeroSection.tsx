@@ -94,7 +94,7 @@ export default function HeroSection() {
             {examples.map((item, i) => (
               <div
                 key={item.id}
-                className="overflow-hidden rounded-xl shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                className="overflow-hidden rounded-xl shadow-md transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:shadow-xl"
                 style={{
                   animation: `bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${0.8 + i * 0.12}s both`,
                 }}
@@ -103,7 +103,7 @@ export default function HeroSection() {
                 <img
                   src={item.dataUrl}
                   alt={item.caption}
-                  className="aspect-square w-full object-cover"
+                  className="aspect-square w-full object-cover transition-transform duration-300"
                 />
               </div>
             ))}

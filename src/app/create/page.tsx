@@ -149,6 +149,32 @@ function CreatePageContent() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [canGenerate, status, handleGenerate]);
 
+  // Number keys 1-4 to toggle styles
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only when not typing in input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
+      if (target.isContentEditable) return;
+
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 4) {
+        const styles: MemeStyle[] = ["cute", "savage", "chill", "formal"];
+        const style = styles[num - 1];
+        setSelectedStyles((prev) => {
+          if (prev.includes(style)) {
+            // Don't allow deselecting the last one
+            if (prev.length === 1) return prev;
+            return prev.filter((s) => s !== style);
+          }
+          return [...prev, style];
+        });
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const handleDownloadAll = useCallback(() => {
     results.forEach((item, i) => {
       setTimeout(() => downloadMeme(item), i * 300);
@@ -269,6 +295,9 @@ function CreatePageContent() {
                 onRetry={handleRetry}
                 onRegenerateSingle={handleRegenerateSingle}
                 regeneratingStyle={regeneratingStyle}
+                onEdit={(newItem) => {
+                  setResults(prev => prev.map(r => r.style === newItem.style ? newItem : r));
+                }}
               />
             </div>
           </div>

@@ -27,6 +27,7 @@ interface MemeResultGridProps {
   onRetry: () => void;
   onRegenerateSingle?: (style: MemeStyle) => void;
   regeneratingStyle?: MemeStyle | null;
+  onEdit?: (item: MemeItem) => void;
 }
 
 const skeletonBgMap: Record<MemeStyle, string> = {
@@ -64,6 +65,7 @@ export default function MemeResultGrid({
   onRetry,
   onRegenerateSingle,
   regeneratingStyle,
+  onEdit,
 }: MemeResultGridProps) {
   // Empty state
   if (status === "idle" && results.length === 0) {
@@ -207,7 +209,14 @@ export default function MemeResultGrid({
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {results.map((item, i) => (
-          <MemeResult key={item.id} item={item} index={i} onRegenerate={onRegenerateSingle} isRegenerating={regeneratingStyle === item.style} />
+          <MemeResult
+            key={item.id}
+            item={item}
+            index={i}
+            onRegenerate={onRegenerateSingle}
+            isRegenerating={regeneratingStyle === item.style}
+            onEdit={onEdit}
+          />
         ))}
       </div>
 

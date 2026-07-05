@@ -10,7 +10,7 @@ export default function CTAFooterSection() {
       {/* Bottom CTA */}
       <section className="relative overflow-hidden px-4 py-24 sm:px-6">
         {/* Decorative glow */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/12 blur-3xl" />
 
         <div className="relative z-10 mx-auto max-w-[800px] text-center">
           <FadeInWrapper>
