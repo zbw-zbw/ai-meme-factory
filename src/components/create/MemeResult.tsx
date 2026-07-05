@@ -1,10 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { MemeItem, MemeStyle } from "@/types/meme";
 import { styleConfigs } from "@/lib/meme-styles";
 import { downloadMeme } from "@/lib/meme-renderer";
 import { useToast } from "@/components/Toast";
-import { DownloadIcon, CopyIcon, RefreshIcon, ShareIcon } from "@/components/Icons";
+import { DownloadIcon, CopyIcon, RefreshIcon, ShareIcon, CloseIcon } from "@/components/Icons";
 import MemeCanvas from "./MemeCanvas";
 
 interface MemeResultProps {
@@ -17,6 +18,17 @@ interface MemeResultProps {
 export default function MemeResult({ item, index, onRegenerate, isRegenerating }: MemeResultProps) {
   const config = styleConfigs[item.style];
   const { showToast } = useToast();
+  const [showLightbox, setShowLightbox] = useState(false);
+
+  // Close lightbox on ESC key
+  useEffect(() => {
+    if (!showLightbox) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowLightbox(false);
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [showLightbox]);
 
   const handleCopy = async () => {
     try {
@@ -58,8 +70,14 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
       className="relative overflow-hidden rounded-2xl bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
       style={{ animation: `bounce-in 0.6s ease-out ${index * 0.15}s both` }}
     >
-      {/* Image preview */}
-      <MemeCanvas item={item} />
+      {/* Image preview - click to enlarge */}
+      <button
+        onClick={() => setShowLightbox(true)}
+        className="block w-full cursor-pointer border-none bg-transparent p-0"
+        aria-label="点击放大预览"
+      >
+        <MemeCanvas item={item} />
+      </button>
 
       {/* Regenerating spinner overlay */}
       {isRegenerating && (
@@ -115,6 +133,36 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating }
           </button>
         </div>
       </div>
+
+      {/* Lightbox - click image to enlarge */}
+      {showLightbox && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70"
+          onClick={() => setShowLightbox(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="图片预览"
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={item.dataUrl}
+              alt={item.caption}
+              className="max-h-[85vh] max-w-[85vw] rounded-2xl shadow-2xl"
+            />
+            <button
+              onClick={() => setShowLightbox(false)}
+              className="absolute -top-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-text-dark shadow-md hover:bg-white cursor-pointer border-none"
+              aria-label="关闭"
+            >
+              <CloseIcon className="h-5 w-5" />
+            </button>
+            <div className="absolute bottom-0 left-0 right-0 rounded-b-2xl bg-black/50 px-4 py-3 backdrop-blur-sm">
+              <p className="truncate text-[0.9rem] text-white">{item.caption}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

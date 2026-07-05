@@ -81,7 +81,7 @@ export default function Navbar() {
           {/* Desktop CTA */}
           <Link
             href="/create"
-            className="rounded-lg bg-primary px-5 py-2 text-sm font-bold text-white no-underline transition-colors hover:bg-primary-dark"
+            className="btn-primary rounded-lg px-5 py-2 text-sm font-bold no-underline"
           >
             开始制作
           </Link>
@@ -136,7 +136,7 @@ export default function Navbar() {
           <Link
             href="/create"
             onClick={() => setMenuOpen(false)}
-            className="mt-1 rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-bold text-white no-underline transition-colors hover:bg-primary-dark"
+            className="btn-primary mt-1 rounded-lg px-5 py-2.5 text-center text-sm font-bold no-underline"
           >
             开始制作
           </Link>

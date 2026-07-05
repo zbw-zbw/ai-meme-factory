@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import FadeInWrapper from "./FadeInWrapper";
 import { EyeIcon, RefreshIcon } from "@/components/Icons";
-import { preRenderExamples } from "@/lib/meme-renderer";
+import { preRenderDemoExamples } from "@/lib/meme-renderer";
 import type { MemeItem } from "@/types/meme";
 
 const demoText = "这个需求能不能别改了";
@@ -20,7 +20,7 @@ export default function DemoSection() {
 
   // Pre-render examples once
   useEffect(() => {
-    preRenderExamples().then(setExamples);
+    preRenderDemoExamples().then(setExamples);
   }, []);
 
   const startTyping = useCallback(() => {

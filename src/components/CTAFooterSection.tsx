@@ -2,26 +2,39 @@
 
 import Link from "next/link";
 import FadeInWrapper from "./FadeInWrapper";
-import { SparklesIcon, ArrowRightIcon } from "@/components/Icons";
+import { SparklesIcon } from "@/components/Icons";
 
 export default function CTAFooterSection() {
   return (
     <>
       {/* Bottom CTA */}
-      <section className="px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-[1200px]">
-          <FadeInWrapper className="text-center">
-            <h2 className="mb-6 font-display text-[1.5rem] font-bold sm:text-[2rem]">
-              你的心情，值得一个专属表情包
+      <section className="relative overflow-hidden px-4 py-24 sm:px-6">
+        {/* Decorative glow */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-3xl" />
+
+        <div className="relative z-10 mx-auto max-w-[800px] text-center">
+          <FadeInWrapper>
+            <h2 className="font-display text-[2rem] font-normal text-text-dark sm:text-[2.5rem]">
+              准备好做你的专属表情包了吗？
             </h2>
-            <Link
-              href="/create"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-center text-[1.1rem] font-bold text-white no-underline transition-colors hover:bg-primary-dark sm:px-10 sm:py-4 sm:text-[1.2rem]"
-            >
-              <SparklesIcon className="h-5 w-5" />
-              立即体验
-              <ArrowRightIcon className="h-5 w-5" />
-            </Link>
+            <p className="mt-4 text-[1rem] text-text-muted">
+              无需注册，打开即用，你的表情包你做主
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
+              <Link
+                href="/create"
+                className="btn-primary inline-flex items-center gap-2 rounded-xl px-10 py-4 text-[1.1rem] font-bold no-underline"
+              >
+                <SparklesIcon className="h-5 w-5" />
+                立即制作
+              </Link>
+              <Link
+                href="/gallery"
+                className="inline-flex items-center gap-2 rounded-xl border-2 border-border px-8 py-4 text-[1.05rem] font-medium text-text-muted no-underline transition-colors hover:border-primary hover:text-text-dark"
+              >
+                浏览画廊
+              </Link>
+            </div>
           </FadeInWrapper>
         </div>
       </section>

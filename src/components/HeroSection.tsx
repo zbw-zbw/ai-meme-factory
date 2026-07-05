@@ -22,11 +22,16 @@ export default function HeroSection() {
       <div className="pointer-events-none absolute bottom-[20%] -right-8 h-24 w-24 rounded-full bg-accent-light/20 blur-2xl md:hidden" />
       <div className="pointer-events-none absolute top-[60%] left-[5%] h-20 w-20 rounded-full bg-chill-accent/15 blur-2xl md:hidden" />
 
+      {/* Desktop decorative glows */}
+      <div className="pointer-events-none absolute top-[10%] right-[5%] hidden h-48 w-48 rounded-full bg-primary/10 blur-3xl md:block" />
+      <div className="pointer-events-none absolute bottom-[15%] left-[8%] hidden h-40 w-40 rounded-full bg-accent/10 blur-3xl md:block" />
+      <div className="pointer-events-none absolute top-[40%] left-[3%] hidden h-32 w-32 rounded-full bg-chill-accent/10 blur-3xl md:block" />
+
       {/* Content with staggered entrance */}
       <div className="relative z-10 flex flex-col items-center text-center">
         {/* Title - display font */}
         <h1
-          className="gradient-title mb-5 font-display text-[2.4rem] font-black leading-tight animate-slide-up sm:text-[3.6rem] md:text-[4.2rem]"
+          className="gradient-title mb-5 font-display text-[2.4rem] font-normal leading-tight animate-slide-up sm:text-[3.6rem] md:text-[5rem]"
           style={{ animationDelay: "0.1s" }}
         >
           AI表情包工厂
@@ -55,7 +60,7 @@ export default function HeroSection() {
         >
           <Link
             href="/create"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-center text-[1.05rem] font-bold text-white no-underline transition-colors hover:bg-primary-dark sm:px-10 sm:text-[1.15rem]"
+            className="btn-primary inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-center text-[1.05rem] font-bold no-underline sm:px-10 sm:text-[1.15rem]"
           >
             <SparklesIcon className="h-5 w-5" />
             开始制作
@@ -73,7 +78,7 @@ export default function HeroSection() {
 
       {/* Skeleton placeholder while examples load (prevents CLS) */}
       {mounted && examples.length === 0 && (
-        <div className="relative z-10 mt-14 w-full max-w-[700px]">
+        <div className="relative z-10 mt-14 w-full max-w-[900px]">
           <div className="grid grid-cols-4 gap-3 sm:gap-4">
             {[0, 1, 2, 3].map(i => (
               <div key={i} className="aspect-square animate-pulse rounded-xl bg-card-hover" />
@@ -84,7 +89,7 @@ export default function HeroSection() {
 
       {/* Real meme examples showcase */}
       {mounted && examples.length > 0 && (
-        <div className="relative z-10 mt-14 w-full max-w-[700px] animate-slide-up" style={{ animationDelay: "0.7s" }}>
+        <div className="relative z-10 mt-14 w-full max-w-[900px] animate-slide-up" style={{ animationDelay: "0.7s" }}>
           <div className="grid grid-cols-4 gap-3 sm:gap-4">
             {examples.map((item, i) => (
               <div

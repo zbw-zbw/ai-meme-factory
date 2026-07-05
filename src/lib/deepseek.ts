@@ -21,7 +21,7 @@ export const defaultConfig: DeepSeekConfig = {
   baseUrl: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
   model: 'deepseek-chat',
   temperature: 0.9,
-  maxTokens: 500,
+  maxTokens: 800,
   timeout: 30000,
 };
 

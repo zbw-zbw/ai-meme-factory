@@ -53,7 +53,7 @@ export async function generateImage(
   const timeoutId = setTimeout(() => controller.abort(), config.timeout);
 
   try {
-    const url = `https://api-inference.huggingface.co/models/${config.model}`;
+    const url = `https://router.huggingface.co/hf-inference/models/${config.model}`;
 
     const options: RequestInit = {
       method: 'POST',

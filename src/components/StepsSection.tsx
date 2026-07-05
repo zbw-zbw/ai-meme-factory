@@ -32,14 +32,14 @@ export default function StepsSection() {
 
         <div className="relative flex flex-col gap-8">
           {/* Vertical connecting line */}
-          <div className="absolute left-[26px] md:left-[30px] top-14 bottom-0 w-px border-l-2 border-dashed border-border-light" />
+          <div className="absolute left-[28px] md:left-[30px] top-14 bottom-0 w-px border-l-2 border-dashed border-border-light" />
 
           {steps.map((step) => (
             <FadeInWrapper key={step.number} threshold={0.2}>
               {/* Full-width row on mobile, centered on desktop */}
               <div className="flex items-center gap-6 md:gap-8">
                 {/* Numbered circle */}
-                <span className="font-display shrink-0 flex h-14 w-14 items-center justify-center rounded-full border-2 border-border bg-card text-[1.2rem] text-primary-dark sm:h-16 sm:w-16 sm:text-[1.4rem]">
+                <span className="font-display shrink-0 flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary bg-primary text-[1.2rem] text-white sm:h-16 sm:w-16 sm:text-[1.4rem]">
                   {step.number}
                 </span>
 

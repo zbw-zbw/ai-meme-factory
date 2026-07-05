@@ -45,6 +45,7 @@ function GalleryContent() {
   const [loaded, setLoaded] = useState(false);
   const [filterStyle, setFilterStyle] = useState<MemeStyle | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [, setTick] = useState(0);
   const [lightboxItem, setLightboxItem] = useState<MemeItem | null>(null);
@@ -91,6 +92,14 @@ function GalleryContent() {
     };
   }, [lightboxItem, showConfirmClear]);
 
+  // Debounce search input to avoid filtering on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const handleDelete = useCallback((id: string) => {
     deleteGalleryItem(id);
     setItems(getGalleryItems());
@@ -122,12 +131,12 @@ function GalleryContent() {
     return items.filter((item) => {
       const matchStyle = filterStyle === "all" || item.style === filterStyle;
       const matchSearch =
-        searchQuery.trim() === "" ||
-        item.caption.toLowerCase().includes(searchQuery.toLowerCase().trim());
+        debouncedSearch.trim() === "" ||
+        item.caption.toLowerCase().includes(debouncedSearch.toLowerCase().trim());
       const matchFavorite = !showFavoritesOnly || favorites.has(item.id);
       return matchStyle && matchSearch && matchFavorite;
     });
-  }, [items, filterStyle, searchQuery, showFavoritesOnly, favorites]);
+  }, [items, filterStyle, debouncedSearch, showFavoritesOnly, favorites]);
 
   return (
     <>

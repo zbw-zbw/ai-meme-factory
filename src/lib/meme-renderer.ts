@@ -558,12 +558,19 @@ export function saveToGallery(item: MemeItem): void {
   }
 }
 
-export function saveBatchToGallery(items: MemeItem[]): void {
+export function saveBatchToGallery(
+  items: MemeItem[],
+  onOverflow?: (droppedCount: number) => void,
+): void {
   if (typeof window === 'undefined' || items.length === 0) return;
   try {
     const existing = getGalleryItems();
     const newItems = items.map((item) => ({ ...item }));
-    const updated = [...newItems, ...existing].slice(0, 30);
+    const allItems = [...newItems, ...existing];
+    if (allItems.length > 30 && onOverflow) {
+      onOverflow(allItems.length - 30);
+    }
+    const updated = allItems.slice(0, 30);
     localStorage.setItem(GALLERY_KEY, JSON.stringify(updated));
   } catch {
     // localStorage might be full, try removing old items
@@ -674,5 +681,29 @@ export async function preRenderExamples(): Promise<MemeItem[]> {
     examples.map(ex => renderCanvasOnly(ex.text, ex.style, ex.caption, ex.icon))
   );
   _cachedExamples = result;
+  return result;
+}
+
+let _cachedDemoExamples: MemeItem[] | null = null;
+
+/**
+ * Pre-render demo examples with different text than Hero examples.
+ */
+export async function preRenderDemoExamples(): Promise<MemeItem[]> {
+  if (typeof document === 'undefined') return [];
+  if (_cachedDemoExamples) return _cachedDemoExamples;
+  await document.fonts.ready;
+
+  const examples = [
+    { text: '这个需求能不能别改了', style: 'cute' as MemeStyle, caption: '改需求不乖哦', icon: 'heart' as IconName },
+    { text: '这个需求能不能别改了', style: 'savage' as MemeStyle, caption: '再改就辞职不干了', icon: 'fire' as IconName },
+    { text: '这个需求能不能别改了', style: 'chill' as MemeStyle, caption: '改吧改吧 无所谓了', icon: 'fish' as IconName },
+    { text: '这个需求能不能别改了', style: 'formal' as MemeStyle, caption: '关于需求变更的审批流程', icon: 'briefcase' as IconName },
+  ];
+
+  const result = await Promise.all(
+    examples.map(ex => renderCanvasOnly(ex.text, ex.style, ex.caption, ex.icon))
+  );
+  _cachedDemoExamples = result;
   return result;
 }

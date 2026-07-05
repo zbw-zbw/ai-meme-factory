@@ -43,6 +43,7 @@ function CreatePageContent() {
   const [demoMode, setDemoMode] = useState(false);
   const [regeneratingStyle, setRegeneratingStyle] = useState<MemeStyle | null>(null);
   const [generationCount, setGenerationCount] = useState(0);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   // Pre-fill from URL ?text= param
   useEffect(() => {
@@ -63,6 +64,7 @@ function CreatePageContent() {
     setErrorMessage("");
 
     const controller = new AbortController();
+    setAbortController(controller);
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
@@ -98,7 +100,11 @@ function CreatePageContent() {
       const newResults: MemeItem[] = await Promise.all(renderPromises);
 
       // Save all results to gallery (localStorage) in one batch write
-      saveBatchToGallery(newResults);
+      saveBatchToGallery(newResults, (dropped) => {
+        if (dropped > 0) {
+          showToast(`画廊已满，${dropped}张旧作品被移除`, "info");
+        }
+      });
       addRecentPrompt(inputText.trim());
       setGenerationCount(c => c + 1);
 
@@ -115,8 +121,18 @@ function CreatePageContent() {
       setProgressPhase("error");
     } finally {
       clearTimeout(timeoutId);
+      setAbortController(null);
     }
-  }, [canGenerate, status, inputText, selectedStyles]);
+  }, [canGenerate, status, inputText, selectedStyles, showToast]);
+
+  const handleCancel = useCallback(() => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+    }
+    setStatus("idle");
+    setProgressPhase("idle");
+  }, [abortController]);
 
   // Ctrl+Enter / Cmd+Enter shortcut to trigger generation
   useEffect(() => {
@@ -192,6 +208,8 @@ function CreatePageContent() {
         );
         setResults(prev => prev.map(r => r.style === style ? (newItem as MemeItem) : r));
         showToast(`已重新生成${styleConfigs[style].name}`, "success");
+      } else {
+        showToast("重新生成失败，请重试", "error");
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
@@ -233,6 +251,7 @@ function CreatePageContent() {
                 progressPhase={progressPhase}
                 canGenerate={canGenerate}
                 onClick={handleGenerate}
+                onCancel={handleCancel}
               />
             </div>
 

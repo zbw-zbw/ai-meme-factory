@@ -9,18 +9,21 @@ const features = [
     number: "01",
     title: "即时生成",
     description: "输入文字，3秒出图，告别表情包荒",
+    color: "#FB7185", // cute pink
   },
   {
     Icon: PaletteIcon,
     number: "02",
     title: "风格多变",
     description: "可爱/毒舌/摸鱼/正经，一句话四种表达",
+    color: "#06B6D4", // chill cyan
   },
   {
     Icon: ShareIcon,
     number: "03",
     title: "一键保存",
     description: "下载保存，直发微信/钉钉/飞书",
+    color: "#F59E0B", // primary amber
   },
 ];
 
@@ -42,9 +45,9 @@ export default function FeaturesSection() {
               return (
                 <div
                   key={feature.title}
-                  className="flex flex-col items-center px-6 py-10 text-center transition-all duration-200 hover:-translate-y-1 hover:bg-card-hover/50 md:py-12"
+                  className="flex flex-col items-center rounded-2xl bg-card p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-card-hover/50"
                 >
-                  <Icon className="mb-4 h-8 w-8 text-primary" />
+                  <Icon className="mb-4 h-8 w-8" style={{ color: feature.color }} />
                   <span className="font-display text-[0.85rem] text-text-light">
                     {feature.number}
                   </span>

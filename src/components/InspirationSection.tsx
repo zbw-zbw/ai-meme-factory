@@ -1,32 +1,56 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import FadeInWrapper from "./FadeInWrapper";
 
-const inspirations = [
-  { text: "老板又在画饼" },
-  { text: "今天不想上班" },
-  { text: "这个bug不是我写的" },
-  { text: "下班！" },
-  { text: "周五了！" },
-  { text: "加班到怀疑人生" },
-  { text: "需求又变了" },
-  { text: "摸鱼被抓了" },
+interface Inspiration {
+  text: string;
+  color: string;
+}
+
+const inspirations: Inspiration[] = [
+  { text: "不想上班", color: "hover:border-chill-accent hover:text-chill-accent" },
+  { text: "今天好累", color: "hover:border-cute-accent hover:text-cute-accent" },
+  { text: "又要开会", color: "hover:border-savage-accent hover:text-savage-accent" },
+  { text: "干饭时间到", color: "hover:border-primary hover:text-primary-dark" },
+  { text: "这个需求改不动了", color: "hover:border-savage-accent hover:text-savage-accent" },
+  { text: "摸鱼摸到爽", color: "hover:border-chill-accent hover:text-chill-accent" },
+  { text: "工资还没发", color: "hover:border-primary hover:text-primary-dark" },
+  { text: "周末去哪玩", color: "hover:border-cute-accent hover:text-cute-accent" },
+  { text: "又胖了三斤", color: "hover:border-cute-accent hover:text-cute-accent" },
+  { text: "代码写不动了", color: "hover:border-savage-accent hover:text-savage-accent" },
+  { text: "想躺平", color: "hover:border-chill-accent hover:text-chill-accent" },
+  { text: "今天也要加油鸭", color: "hover:border-cute-accent hover:text-cute-accent" },
 ];
 
 /* Stagger delay (ms) applied via inline transitionDelay so the fade-in
    is driven by the surrounding FadeInWrapper instead of a CSS animation
    that plays while the wrapper is still opacity:0. */
-const pillDelays = [0, 60, 120, 180, 240, 300, 360, 420];
+const pillDelays = [0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660];
 
 export default function InspirationSection() {
+  const [shuffled, setShuffled] = useState<Inspiration[]>(inspirations);
+
+  const handleShuffle = () => {
+    setShuffled((prev) => [...prev].sort(() => Math.random() - 0.5));
+  };
+
   return (
     <section className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[1200px]">
-        <FadeInWrapper className="mb-3 text-center">
-          <h2 className="font-display text-[1.75rem] font-bold sm:text-[2rem]">
-            更多灵感
-          </h2>
+        <FadeInWrapper className="mb-3">
+          <div className="flex items-center justify-center gap-3">
+            <h2 className="font-display text-[1.75rem] font-bold sm:text-[2rem]">
+              更多灵感
+            </h2>
+            <button
+              onClick={handleShuffle}
+              className="ml-auto text-[0.85rem] text-text-muted hover:text-text-dark cursor-pointer border-none bg-transparent whitespace-nowrap"
+            >
+              换一批
+            </button>
+          </div>
         </FadeInWrapper>
         <FadeInWrapper className="mb-10 text-center">
           <p className="text-[0.95rem] text-text-muted">
@@ -36,11 +60,11 @@ export default function InspirationSection() {
 
         <FadeInWrapper>
           <div className="flex flex-wrap justify-center gap-3">
-            {inspirations.map((item, i) => (
+            {shuffled.map((item, i) => (
               <Link
                 key={item.text}
                 href={`/create?text=${encodeURIComponent(item.text)}`}
-                className="inspiration-pill inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 hover:border-primary hover:bg-card-hover hover:shadow-md"
+                className={`inspiration-pill inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 ${item.color} hover:bg-card-hover hover:shadow-md`}
                 style={{ transitionDelay: `${pillDelays[i] ?? 0}ms` }}
               >
                 {item.text}

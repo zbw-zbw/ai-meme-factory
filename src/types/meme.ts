@@ -43,4 +43,5 @@ export interface ApiMemeResult {
   style: MemeStyle;
   caption: string;
   icon: IconName;
+  imageUrl?: string;
 }
