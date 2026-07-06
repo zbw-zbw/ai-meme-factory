@@ -33,7 +33,7 @@ export default function StepsSection() {
 
         <div className="relative flex flex-col gap-8">
           {/* Vertical connecting line */}
-          <div className="absolute left-[28px] md:left-[30px] top-14 bottom-0 w-px border-l-2 border-dashed border-border-light" />
+          <div className="absolute left-[28px] md:left-[32px] top-14 bottom-0 w-px border-l-2 border-dashed border-border-light" />
 
           {steps.map((step) => (
             <FadeInWrapper key={step.number} threshold={0.2}>

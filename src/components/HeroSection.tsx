@@ -23,9 +23,9 @@ export default function HeroSection() {
       <div className="pointer-events-none absolute top-[60%] left-[5%] h-20 w-20 rounded-full bg-secondary/10 blur-2xl md:hidden" />
 
       {/* Desktop decorative glows */}
-      <div className="pointer-events-none absolute top-[10%] right-[5%] hidden h-48 w-48 rounded-full bg-primary/10 blur-3xl animate-float md:block" />
-      <div className="pointer-events-none absolute bottom-[15%] left-[8%] hidden h-40 w-40 rounded-full bg-accent/10 blur-3xl md:block" />
-      <div className="pointer-events-none absolute top-[40%] left-[3%] hidden h-32 w-32 rounded-full bg-secondary/10 blur-3xl md:block" />
+      <div className="pointer-events-none absolute z-0 top-[10%] right-[5%] hidden h-48 w-48 rounded-full bg-primary/10 blur-3xl animate-float md:block" />
+      <div className="pointer-events-none absolute z-0 bottom-[15%] left-[8%] hidden h-40 w-40 rounded-full bg-accent/10 blur-3xl md:block" />
+      <div className="pointer-events-none absolute z-0 top-[40%] left-[3%] hidden h-32 w-32 rounded-full bg-secondary/10 blur-3xl md:block" />
 
       {/* Content with staggered entrance */}
       <div className="relative z-10 flex flex-col items-center text-center">

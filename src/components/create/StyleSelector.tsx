@@ -62,7 +62,7 @@ export default function StyleSelector({ selected, onChange }: StyleSelectorProps
               className={`relative flex items-center gap-2 rounded-xl border-2 p-3 text-left transition-all duration-200 ${
                 isSelected
                   ? `${bgMap[style]} ${accentMap[style]} shadow-sm -translate-y-0.5`
-                  : "border-border-light bg-card hover:shadow-sm"
+                  : "border-border-light glass-card hover:shadow-sm"
               } cursor-pointer`}
             >
               {/* Check mark */}

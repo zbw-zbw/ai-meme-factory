@@ -54,7 +54,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 no-underline">
           <LogoIcon className="h-7 w-7 text-primary" />
-          <span className="gradient-title text-lg font-bold">AI表情包工厂</span>
+          <span className="gradient-logo text-lg font-bold">AI表情包工厂</span>
         </Link>
 
         {/* Desktop nav */}
@@ -96,6 +96,7 @@ export default function Navbar() {
           className="flex items-center justify-center md:hidden"
           aria-label="切换菜单"
           aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
         >
           {menuOpen ? (
             <CloseIcon className="h-6 w-6 text-text-dark" />
@@ -107,10 +108,10 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div
+        id="mobile-menu"
         className={`overflow-hidden bg-bg/95 transition-all duration-300 md:hidden ${
-          menuOpen ? "max-h-72 border-t border-border-light" : "max-h-0"
+          menuOpen ? "max-h-80 border-t border-border-light" : "max-h-0"
         }`}
-        style={{ backgroundColor: "var(--color-bg)" }}
       >
         <div className="flex flex-col gap-4 px-6 py-5">
           <Link

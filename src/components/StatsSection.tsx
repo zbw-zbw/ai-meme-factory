@@ -58,7 +58,7 @@ export default function StatsSection() {
             {stats.map((stat, i) => (
               <div
                 key={stat.label}
-                className="glass-card flex flex-col items-center rounded-2xl p-6 text-center"
+                className="glass-card overflow-hidden flex flex-col items-center rounded-2xl p-6 text-center"
                 style={{
                   animation: `bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
                 }}

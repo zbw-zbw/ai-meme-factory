@@ -48,6 +48,7 @@ export default function TextInput({ value, onChange, refreshTrigger }: TextInput
       <h2 className="flex items-center gap-2 text-[1.5rem] font-bold text-text-dark">
         <PenIcon className="h-6 w-6 text-primary-dark" />
         说点什么吧
+        <span className="ai-label">AI 生成</span>
       </h2>
 
       <div className="mt-3 relative">
@@ -56,7 +57,7 @@ export default function TextInput({ value, onChange, refreshTrigger }: TextInput
           value={value}
           onChange={handleChange}
           placeholder="输入你想表达的话，比如：这个需求能不能别改了..."
-          className="w-full resize-none rounded-xl border-2 border-border-light bg-card px-4 py-3 text-[1rem] leading-relaxed text-text-dark outline-none transition-all duration-200 placeholder:text-text-light focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[100px]"
+          className="w-full resize-none rounded-xl border-2 border-border-light glass-card px-4 py-3 text-[1rem] leading-relaxed text-text-dark outline-none transition-all duration-200 placeholder:text-text-light focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[100px]"
           maxLength={100}
         />
         <span className="absolute bottom-3 right-4 text-[0.8rem] text-text-light">

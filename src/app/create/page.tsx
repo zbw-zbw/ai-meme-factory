@@ -229,10 +229,8 @@ function CreatePageContent() {
       const data = await response.json();
       if (data.success && data.data?.memes?.[0]) {
         const meme = data.data.memes[0];
-        const newItem = await Promise.resolve(
-          renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.icon, meme.imageUrl)
-        );
-        setResults(prev => prev.map(r => r.style === style ? (newItem as MemeItem) : r));
+        const newItem = await renderMemeToCanvas(inputText.trim(), meme.style, meme.caption, meme.icon, meme.imageUrl);
+        setResults(prev => prev.map(r => r.style === style ? newItem : r));
         showToast(`已重新生成${styleConfigs[style].name}`, "success");
       } else {
         showToast("重新生成失败，请重试", "error");

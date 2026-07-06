@@ -60,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`${notoSansSC.variable} ${zcoolKuaiLe.variable} ${fredoka.variable} ${nunito.variable} antialiased`}>
+    <html lang="zh-CN" className={`${notoSansSC.variable} ${zcoolKuaiLe.variable} ${fredoka.variable} ${nunito.variable} antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

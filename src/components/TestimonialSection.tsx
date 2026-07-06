@@ -40,7 +40,7 @@ export default function TestimonialSection() {
           {testimonials.map((t, i) => (
             <FadeInWrapper key={i}>
               <div
-                className="glass-card gradient-border flex h-full flex-col rounded-2xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                className="glass-card gradient-border flex h-full flex-col rounded-2xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-slide-up"
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
                 <div className="mb-3 text-[2rem]">{t.avatar}</div>

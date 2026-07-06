@@ -173,6 +173,7 @@ function GalleryContent() {
               <h1 className="flex items-center gap-3 text-[1.75rem] font-bold text-text-dark sm:text-[2rem]">
                 <ImageIcon className="h-7 w-7 text-primary-dark" />
                 我的画廊
+                <span className="ai-label">AI 生成</span>
               </h1>
               <p className="mt-2 text-[0.95rem] text-text-muted">
                 {loaded && items.length > 0
@@ -329,7 +330,7 @@ function GalleryContent() {
                 return (
                   <div
                     key={item.id}
-                    className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                    className="group overflow-hidden rounded-2xl glass-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
                     style={
                       shouldAnimate
                         ? { animation: `bounce-in 0.5s ease-out ${i * 0.08}s both` }
@@ -515,7 +516,7 @@ function GalleryContent() {
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleDelete(lightboxItem.id); setLightboxItem(null); }}
-                  className="inline-flex items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[0.8rem] text-white transition-colors hover:bg-red-500/50 cursor-pointer border-none"
+                  className="inline-flex items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[0.8rem] text-white transition-colors hover:bg-savage-accent/50 cursor-pointer border-none"
                   aria-label="删除"
                 >
                   <TrashIcon className="h-4 w-4" />

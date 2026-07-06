@@ -52,7 +52,7 @@ export default function GenerateButton({ status, progressPhase, canGenerate, onC
       {status === "generating" && onCancel && (
         <button
           onClick={onCancel}
-          className="inline-flex items-center gap-1.5 rounded-xl border-2 border-border bg-card px-4 py-3 text-[0.95rem] font-medium text-text-muted transition-colors hover:border-red-400 hover:text-red-500 cursor-pointer"
+          className="inline-flex items-center gap-1.5 rounded-xl border-2 border-border bg-card px-4 py-3 text-[0.95rem] font-medium text-text-muted transition-colors hover:border-savage-accent hover:text-savage-accent cursor-pointer"
         >
           取消
         </button>

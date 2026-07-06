@@ -40,7 +40,7 @@ export default function FeaturesSection() {
 
         {/* Horizontal strip - 3 columns with dividers */}
         <FadeInWrapper>
-          <div className="grid grid-cols-1 divide-y divide-border-light md:grid-cols-3 md:divide-x md:divide-y-0">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {features.map((feature) => {
               const { Icon } = feature;
               return (

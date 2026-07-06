@@ -22,13 +22,15 @@ const faqs = [
   },
 ];
 
-function FAQItem({ q, a, isOpen, onToggle }: { q: string; a: string; isOpen: boolean; onToggle: () => void }) {
+function FAQItem({ q, a, id, isOpen, onToggle }: { q: string; a: string; id: number; isOpen: boolean; onToggle: () => void }) {
   return (
     <div className="border-b border-border-light">
       <button
+        id={`faq-button-${id}`}
         onClick={onToggle}
         className="flex w-full items-center justify-between py-4 text-left cursor-pointer border-none bg-transparent"
         aria-expanded={isOpen}
+        aria-controls={`faq-panel-${id}`}
       >
         <span className="text-[1rem] font-medium text-text-dark">{q}</span>
         <span className={`text-[1.2rem] transition-transform duration-200 ${isOpen ? "rotate-45 text-primary" : "text-text-muted"}`}>
@@ -36,7 +38,7 @@ function FAQItem({ q, a, isOpen, onToggle }: { q: string; a: string; isOpen: boo
         </span>
       </button>
       {isOpen && (
-        <p className="pb-4 text-[0.9rem] leading-relaxed text-text-muted" style={{ animation: "fade-in 0.2s ease-out" }}>
+        <p id={`faq-panel-${id}`} role="region" aria-labelledby={`faq-button-${id}`} className="pb-4 text-[0.9rem] leading-relaxed text-text-muted" style={{ animation: "fade-in 0.2s ease-out" }}>
           {a}
         </p>
       )}
@@ -64,6 +66,7 @@ export default function FAQSection() {
                 <FAQItem
                   q={faq.q}
                   a={faq.a}
+                  id={i}
                   isOpen={openIndex === i}
                   onToggle={() => setOpenIndex(openIndex === i ? null : i)}
                 />

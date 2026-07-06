@@ -9,6 +9,19 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
     setIsDark(document.documentElement.classList.contains("dark"));
+    
+    const handleStorageChange = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+    window.addEventListener("storage", handleStorageChange);
+    
+    // Custom event for same-tab sync
+    window.addEventListener("themechange", handleStorageChange);
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("themechange", handleStorageChange);
+    };
   }, []);
 
   const toggle = () => {
@@ -23,6 +36,7 @@ export default function ThemeToggle() {
       document.documentElement.classList.add("light");
       localStorage.setItem("theme", "light");
     }
+    window.dispatchEvent(new Event("themechange"));
   };
 
   if (!mounted) {

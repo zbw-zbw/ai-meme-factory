@@ -41,7 +41,7 @@ const skeletonIconColor: Record<MemeStyle, string> = {
   cute: "#FB7185",
   savage: "#F43F5E",
   chill: "#06B6D4",
-  formal: "#475569",
+  formal: "#57534E",
 };
 
 const phaseDescriptions: Record<ProgressPhase, string> = {
@@ -74,6 +74,7 @@ export default function MemeResultGrid({
         <h2 className="flex items-center gap-2 text-[1.5rem] font-bold text-text-dark">
           <SparklesIcon className="h-6 w-6 text-primary-dark" />
           生成结果
+          <span className="ai-label">AI 生成</span>
         </h2>
         <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border-light py-16">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-card-hover">
@@ -105,6 +106,7 @@ export default function MemeResultGrid({
         <h2 className="flex items-center gap-2 text-[1.5rem] font-bold text-text-dark">
           <SparklesIcon className="h-6 w-6 text-primary-dark" />
           生成结果
+          <span className="ai-label">AI 生成</span>
         </h2>
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -179,8 +181,9 @@ export default function MemeResultGrid({
         <h2 className="flex items-center gap-2 text-[1.5rem] font-bold text-text-dark">
           <SparklesIcon className="h-6 w-6 text-primary-dark" />
           生成结果
+          <span className="ai-label">AI 生成</span>
         </h2>
-        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl bg-red-50 py-16">
+        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl bg-savage-accent/10 py-16">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white">
             <AlertIcon className="h-8 w-8 text-savage-accent" />
           </div>
@@ -205,6 +208,7 @@ export default function MemeResultGrid({
       <h2 className="flex items-center gap-2 text-[1.5rem] font-bold text-text-dark">
         <SparklesIcon className="h-6 w-6 text-primary-dark" />
         生成结果
+        <span className="ai-label">AI 生成</span>
       </h2>
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">

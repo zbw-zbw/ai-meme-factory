@@ -24,16 +24,18 @@ const inspirations: Inspiration[] = [
   { text: "今天也要加油鸭", color: "hover:border-cute-accent hover:text-cute-accent" },
 ];
 
-/* Stagger delay (ms) applied via inline transitionDelay so the fade-in
-   is driven by the surrounding FadeInWrapper instead of a CSS animation
-   that plays while the wrapper is still opacity:0. */
-const pillDelays = [0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660];
-
 export default function InspirationSection() {
   const [shuffled, setShuffled] = useState<Inspiration[]>(inspirations);
 
   const handleShuffle = () => {
-    setShuffled((prev) => [...prev].sort(() => Math.random() - 0.5));
+    setShuffled((prev) => {
+      const arr = [...prev];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    });
   };
 
   return (
@@ -59,12 +61,11 @@ export default function InspirationSection() {
 
         <FadeInWrapper>
           <div className="flex flex-wrap justify-center gap-3">
-            {shuffled.map((item, i) => (
+            {shuffled.map((item) => (
               <Link
                 key={item.text}
                 href={`/create?text=${encodeURIComponent(item.text)}`}
-                className={`inspiration-pill inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 hover:scale-105 ${item.color} hover:bg-card-hover hover:shadow-md`}
-                style={{ transitionDelay: `${pillDelays[i] ?? 0}ms` }}
+                className={`inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 hover:scale-105 ${item.color} hover:bg-card-hover hover:shadow-md`}
               >
                 {item.text}
               </Link>

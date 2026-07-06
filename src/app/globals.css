@@ -79,10 +79,10 @@
   50% { background-position: 100% 50%; }
 }
 
-/* AI-Native pulse glow */
+/* AI-Native pulse glow - uses outline instead of box-shadow to avoid hover conflicts */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4), 0 0 20px rgba(139, 92, 246, 0.15); }
-  50% { box-shadow: 0 0 0 8px rgba(236, 72, 153, 0), 0 0 30px rgba(139, 92, 246, 0.3); }
+  0%, 100% { outline: 2px solid rgba(236, 72, 153, 0.3); outline-offset: 2px; }
+  50% { outline: 2px solid rgba(139, 92, 246, 0.5); outline-offset: 4px; }
 }
 
 /* Streaming shimmer effect */
@@ -263,12 +263,10 @@ body {
   transform: scale(0.98);
 }
 
-/* ===== Gradient border card ===== */
+/* ===== Gradient border (border-only, no background) ===== */
 
 .gradient-border {
   position: relative;
-  background: var(--color-card);
-  border-radius: 1rem;
 }
 
 .gradient-border::before {
@@ -276,7 +274,7 @@ body {
   position: absolute;
   inset: 0;
   padding: 1px;
-  border-radius: 1rem;
+  border-radius: inherit;
   background: linear-gradient(135deg, var(--color-primary-light), var(--color-accent-light), var(--color-secondary-light));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -296,6 +294,10 @@ body {
     --color-text-light: #8B6A7A;
     --color-border: #3D2433;
     --color-border-light: #2A1A24;
+    /* Style dark mode backgrounds */
+    --color-cute-bg: #2A1620;
+    --color-chill-bg: #0C2226;
+    --color-formal-bg: #1C1A18;
   }
 }
 
@@ -310,6 +312,36 @@ body {
   --color-text-light: #8B6A7A;
   --color-border: #3D2433;
   --color-border-light: #2A1A24;
+  /* Style dark mode backgrounds */
+  --color-cute-bg: #2A1620;
+  --color-chill-bg: #0C2226;
+  --color-formal-bg: #1C1A18;
+}
+
+/* Dark mode overrides for utility classes */
+.dark .glass,
+:root:not(.light) .glass {
+  background: rgba(31, 20, 25, 0.65);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .glass-card,
+:root:not(.light) .glass-card {
+  background: rgba(31, 20, 25, 0.55);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(139, 92, 246, 0.1);
+}
+
+.dark .ai-label,
+:root:not(.light) .ai-label {
+  color: var(--color-accent-light);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(236, 72, 153, 0.18));
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.dark .gradient-border::before,
+:root:not(.light) .gradient-border::before {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent), var(--color-secondary));
 }
 
 /* ===== Screen reader only (visually hidden) ===== */

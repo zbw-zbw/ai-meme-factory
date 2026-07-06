@@ -11,7 +11,7 @@ export default function CTAFooterSection() {
       <section className="relative overflow-hidden px-4 py-24 sm:px-6">
         {/* Decorative glow */}
         <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/12 blur-3xl animate-float" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/12 blur-3xl animate-float" />
+        <div className="pointer-events-none absolute left-[40%] top-[60%] z-0 h-64 w-64 rounded-full bg-accent/12 blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
 
         <div className="relative z-10 mx-auto max-w-[800px] text-center">
           <FadeInWrapper>
