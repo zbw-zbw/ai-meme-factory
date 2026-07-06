@@ -41,6 +41,7 @@ export default function InspirationSection() {
       <div className="mx-auto max-w-[1200px]">
         <FadeInWrapper>
           <div className="mb-8 text-center">
+            <span className="ai-label">灵感库</span>
             <h2 className="font-display text-[1.75rem] font-normal text-text-dark sm:text-[2rem]">
               灵感参考
             </h2>
@@ -49,7 +50,7 @@ export default function InspirationSection() {
             </p>
             <button
               onClick={handleShuffle}
-              className="mt-3 inline-flex items-center gap-1 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
+              className="glass-card mt-3 inline-flex items-center gap-1 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
             >
               换一批
             </button>
@@ -62,7 +63,7 @@ export default function InspirationSection() {
               <Link
                 key={item.text}
                 href={`/create?text=${encodeURIComponent(item.text)}`}
-                className={`inspiration-pill inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 ${item.color} hover:bg-card-hover hover:shadow-md`}
+                className={`inspiration-pill inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 hover:scale-105 ${item.color} hover:bg-card-hover hover:shadow-md`}
                 style={{ transitionDelay: `${pillDelays[i] ?? 0}ms` }}
               >
                 {item.text}

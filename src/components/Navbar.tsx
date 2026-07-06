@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { LogoIcon, MenuIcon, CloseIcon } from "@/components/Icons";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -52,7 +53,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 no-underline">
-          <LogoIcon className="h-7 w-7 text-primary-dark" />
+          <LogoIcon className="h-7 w-7 text-primary" />
           <span className="gradient-title text-lg font-bold">AI表情包工厂</span>
         </Link>
 
@@ -78,6 +79,8 @@ export default function Navbar() {
           >
             我的画廊
           </Link>
+          {/* Theme toggle */}
+          <ThemeToggle />
           {/* Desktop CTA */}
           <Link
             href="/create"
@@ -104,10 +107,10 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div
-        className={`overflow-hidden transition-all duration-300 md:hidden ${
-          menuOpen ? "max-h-56 border-t border-border-light" : "max-h-0"
+        className={`overflow-hidden bg-bg/95 transition-all duration-300 md:hidden ${
+          menuOpen ? "max-h-72 border-t border-border-light" : "max-h-0"
         }`}
-        style={{ backgroundColor: "rgba(255, 251, 235, 0.95)" }}
+        style={{ backgroundColor: "var(--color-bg)" }}
       >
         <div className="flex flex-col gap-4 px-6 py-5">
           <Link
@@ -132,6 +135,8 @@ export default function Navbar() {
           >
             我的画廊
           </Link>
+          {/* Theme toggle */}
+          <ThemeToggle />
           {/* Mobile CTA */}
           <Link
             href="/create"

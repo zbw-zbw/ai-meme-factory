@@ -86,6 +86,7 @@ export default function DemoSection() {
     <section id="demo-section" className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[1200px]">
         <FadeInWrapper className="mb-10 text-center">
+          <span className="ai-label">AI 实时演示</span>
           <h2 className="flex items-center justify-center gap-2 font-display text-[1.75rem] font-bold sm:text-[2rem]">
             <EyeIcon className="h-6 w-6 text-primary-dark" />
             看看它怎么工作
@@ -93,9 +94,9 @@ export default function DemoSection() {
         </FadeInWrapper>
 
         <FadeInWrapper>
-          <div className="rounded-2xl bg-card p-6 shadow-sm sm:p-8">
+          <div className="glass-card rounded-2xl bg-card p-6 shadow-sm sm:p-8">
             {/* Simulated input */}
-            <div className="flex items-center gap-3 rounded-xl border-2 border-border-light px-4 py-3 sm:px-5 sm:py-4">
+            <div className={`flex items-center gap-3 rounded-xl border-2 border-border-light px-4 py-3 sm:px-5 sm:py-4 ${!typingDone && displayText ? "ai-shimmer" : ""}`}>
               <div className="flex-1 overflow-hidden">
                 <span className={`text-[0.95rem] sm:text-[1rem] ${displayText ? "text-text-dark" : "text-text-light"}`}>
                   {displayText || "在这里输入你想说的话..."}
@@ -107,9 +108,10 @@ export default function DemoSection() {
               <button
                 className={`shrink-0 rounded-xl px-5 py-2 text-[0.9rem] font-bold transition-all duration-300 no-underline ${
                   btnActive
-                    ? "bg-primary text-white shadow-sm cursor-pointer"
+                    ? "text-white shadow-sm cursor-pointer"
                     : "bg-border-light text-text-light cursor-default"
                 }`}
+                style={btnActive ? { background: "linear-gradient(135deg, var(--color-primary), var(--color-accent))" } : undefined}
               >
                 生成
               </button>
@@ -130,7 +132,7 @@ export default function DemoSection() {
                 {examples.map((item, i) => (
                   <div
                     key={item.id}
-                    className="overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                    className="relative overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
                     style={{
                       animation: `bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.12}s both`,
                     }}
@@ -141,6 +143,7 @@ export default function DemoSection() {
                       alt={item.caption}
                       className="aspect-square w-full object-cover"
                     />
+                    <span className="ai-label absolute right-2 top-2">AI</span>
                   </div>
                 ))}
               </div>

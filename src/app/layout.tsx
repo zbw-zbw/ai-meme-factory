@@ -1,18 +1,30 @@
 import type { Metadata } from "next";
-import { Noto_Sans_SC, ZCOOL_KuaiLe } from "next/font/google";
+import { Noto_Sans_SC, ZCOOL_KuaiLe, Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/Toast";
 import BackToTop from "@/components/BackToTop";
 
 const notoSansSC = Noto_Sans_SC({
   variable: "--font-noto-sans-sc",
-  weight: ["400", "700", "900"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
 const zcoolKuaiLe = ZCOOL_KuaiLe({
   variable: "--font-zcool-kuaile",
   weight: "400",
+  display: "swap",
+});
+
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const nunito = Nunito({
+  variable: "--font-nunito",
+  weight: ["400", "600", "700"],
   display: "swap",
 });
 
@@ -30,13 +42,28 @@ export const metadata: Metadata = {
   },
 };
 
+const themeScript = `
+(function() {
+  try {
+    var stored = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var isDark = stored ? stored === 'dark' : prefersDark;
+    if (isDark) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.add('light');
+  } catch(e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`${notoSansSC.variable} ${zcoolKuaiLe.variable} antialiased`}>
+    <html lang="zh-CN" className={`${notoSansSC.variable} ${zcoolKuaiLe.variable} ${fredoka.variable} ${nunito.variable} antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-screen font-sans bg-bg text-text-dark">
         <a
           href="#main-content"

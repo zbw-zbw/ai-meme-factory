@@ -15,19 +15,19 @@ export default function Home() {
       <Navbar />
       <main id="main-content">
         <HeroSection />
-        <div className="bg-white/50">
+        <div className="bg-card/40">
           <StatsSection />
         </div>
         <FeaturesSection />
-        <div className="bg-white/50">
+        <div className="bg-card/40">
           <StepsSection />
         </div>
         <DemoSection />
-        <div className="bg-white/50">
+        <div className="bg-card/40">
           <InspirationSection />
         </div>
         <TestimonialSection />
-        <div className="bg-white/50">
+        <div className="bg-card/40">
           <FAQSection />
         </div>
         <CTAFooterSection />

@@ -25,6 +25,7 @@ export default function StepsSection() {
     <section className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[1200px]">
         <FadeInWrapper className="mb-12 text-center">
+          <span className="ai-label mb-3 inline-block">使用流程</span>
           <h2 className="font-display text-[1.75rem] font-bold sm:text-[2rem]">
             三步搞定
           </h2>
@@ -37,9 +38,12 @@ export default function StepsSection() {
           {steps.map((step) => (
             <FadeInWrapper key={step.number} threshold={0.2}>
               {/* Full-width row on mobile, centered on desktop */}
-              <div className="flex items-center gap-6 md:gap-8">
+              <div className="flex items-center gap-6 transition-transform hover:translate-x-1 md:gap-8">
                 {/* Numbered circle */}
-                <span className="font-display shrink-0 flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary bg-primary text-[1.2rem] text-white sm:h-16 sm:w-16 sm:text-[1.4rem]">
+                <span
+                  className="animate-pulse-glow font-display shrink-0 flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary text-[1.2rem] text-white sm:h-16 sm:w-16 sm:text-[1.4rem]"
+                  style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-accent))" }}
+                >
                   {step.number}
                 </span>
 

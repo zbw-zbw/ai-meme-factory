@@ -58,12 +58,12 @@ export default function StatsSection() {
             {stats.map((stat, i) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center text-center"
+                className="glass-card flex flex-col items-center rounded-2xl p-6 text-center"
                 style={{
                   animation: `bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
                 }}
               >
-                <div className="flex items-baseline gap-0.5">
+                <div className="animate-pulse-glow flex items-baseline gap-0.5">
                   <span className="font-display text-[3rem] font-normal gradient-title sm:text-[3.5rem]">
                     <CountUp target={stat.value} duration={stat.value <= 10 ? 600 : 1500} />
                   </span>

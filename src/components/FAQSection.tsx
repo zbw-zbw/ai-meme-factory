@@ -31,7 +31,7 @@ function FAQItem({ q, a, isOpen, onToggle }: { q: string; a: string; isOpen: boo
         aria-expanded={isOpen}
       >
         <span className="text-[1rem] font-medium text-text-dark">{q}</span>
-        <span className={`text-[1.2rem] text-text-muted transition-transform duration-200 ${isOpen ? "rotate-45" : ""}`}>
+        <span className={`text-[1.2rem] transition-transform duration-200 ${isOpen ? "rotate-45 text-primary" : "text-text-muted"}`}>
           +
         </span>
       </button>
@@ -51,13 +51,14 @@ export default function FAQSection() {
     <section className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[800px]">
         <FadeInWrapper className="mb-8 text-center">
+          <span className="ai-label">常见问题</span>
           <h2 className="font-display text-[1.75rem] font-normal text-text-dark sm:text-[2rem]">
             常见问题
           </h2>
         </FadeInWrapper>
 
         <FadeInWrapper>
-          <div className="rounded-2xl bg-card p-2 shadow-sm">
+          <div className="glass-card rounded-2xl bg-card p-2 shadow-sm">
             {faqs.map((faq, i) => (
               <div key={i} className="px-4">
                 <FAQItem

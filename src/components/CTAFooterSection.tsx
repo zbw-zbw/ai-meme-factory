@@ -10,10 +10,12 @@ export default function CTAFooterSection() {
       {/* Bottom CTA */}
       <section className="relative overflow-hidden px-4 py-24 sm:px-6">
         {/* Decorative glow */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/12 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/12 blur-3xl animate-float" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/12 blur-3xl animate-float" />
 
         <div className="relative z-10 mx-auto max-w-[800px] text-center">
           <FadeInWrapper>
+            <span className="ai-label">AI 驱动 · 免费使用</span>
             <h2 className="font-display text-[2rem] font-normal text-text-dark sm:text-[2.5rem]">
               准备好做你的专属表情包了吗？
             </h2>
@@ -23,7 +25,7 @@ export default function CTAFooterSection() {
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
               <Link
                 href="/create"
-                className="btn-primary inline-flex items-center gap-2 rounded-xl px-10 py-4 text-[1.1rem] font-bold no-underline"
+                className="btn-primary animate-pulse-glow inline-flex items-center gap-2 rounded-xl px-10 py-4 text-[1.1rem] font-bold no-underline"
               >
                 <SparklesIcon className="h-5 w-5" />
                 立即制作
@@ -72,7 +74,7 @@ export default function CTAFooterSection() {
           </div>
           <div className="mt-8 border-t border-border-light pt-6 text-center">
             <p className="text-[0.75rem] text-text-light">
-              © {new Date().getFullYear()} AI表情包工厂 · Made with ❤️
+              © {new Date().getFullYear()} AI表情包工厂 · Made with AI
             </p>
           </div>
         </div>
