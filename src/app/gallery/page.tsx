@@ -61,6 +61,15 @@ function GalleryContent() {
     setLoaded(true);
   }, []);
 
+  // Sync gallery across tabs via storage event
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === 'ai-meme-factory-gallery') setItems(getGalleryItems());
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
   // Auto-refresh relative time every 60 seconds
   useEffect(() => {
     const timer = setInterval(() => setTick(t => t + 1), 60000);
@@ -271,7 +280,7 @@ function GalleryContent() {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light hover:text-text-dark cursor-pointer border-none bg-transparent"
+                    className="absolute right-1 top-1/2 flex min-h-[36px] min-w-[36px] -translate-y-1/2 items-center justify-center p-1 text-text-light hover:text-text-dark cursor-pointer border-none bg-transparent"
                     aria-label="清除搜索"
                   >
                     <CloseIcon className="h-4 w-4" />
@@ -363,7 +372,7 @@ function GalleryContent() {
                       <div className="flex gap-1">
                         <button
                           onClick={() => handleToggleFavorite(item.id)}
-                          className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors cursor-pointer ${
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors cursor-pointer ${
                             favorites.has(item.id)
                               ? "bg-accent-light/20 text-accent"
                               : "bg-card-hover text-text-muted hover:text-accent"
@@ -374,7 +383,7 @@ function GalleryContent() {
                         </button>
                         <button
                           onClick={() => handleCopy(item)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
                           aria-label="复制图片"
                           title="复制"
                         >
@@ -382,7 +391,7 @@ function GalleryContent() {
                         </button>
                         <button
                           onClick={() => handleDownload(item)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-text-dark cursor-pointer"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-text-dark cursor-pointer"
                           title="下载"
                           aria-label="下载"
                         >
@@ -390,7 +399,7 @@ function GalleryContent() {
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-savage-accent cursor-pointer"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg bg-card-hover text-text-muted transition-colors hover:text-savage-accent cursor-pointer"
                           title="删除"
                           aria-label="删除"
                         >
@@ -404,7 +413,7 @@ function GalleryContent() {
                       <p className="truncate text-[0.75rem] text-text-light" title={item.caption}>
                         {item.caption}
                       </p>
-                      <p className="text-[0.65rem] text-text-light">{relativeTime(item.createdAt)}</p>
+                      <p className="text-[0.75rem] text-text-light">{relativeTime(item.createdAt)}</p>
                     </div>
                   </div>
                 );

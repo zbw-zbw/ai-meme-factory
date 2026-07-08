@@ -37,11 +37,3 @@ export interface GenerateRequest {
 
 // Generate status
 export type GenerateStatus = 'idle' | 'generating' | 'done' | 'error';
-
-// API response meme (from server)
-export interface ApiMemeResult {
-  style: MemeStyle;
-  caption: string;
-  icon: IconName;
-  imageUrl?: string;
-}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, Suspense } from "react";
+import { useState, useCallback, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -43,15 +43,26 @@ function CreatePageContent() {
   const [demoMode, setDemoMode] = useState(false);
   const [regeneratingStyle, setRegeneratingStyle] = useState<MemeStyle | null>(null);
   const [generationCount, setGenerationCount] = useState(0);
-  const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
 
   // Pre-fill from URL ?text= param
   useEffect(() => {
     const textParam = searchParams.get("text");
     if (textParam) {
-      setInputText(decodeURIComponent(textParam));
+      setInputText(textParam);
     }
   }, [searchParams]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const canGenerate = inputText.trim().length > 0 && selectedStyles.length > 0;
 
@@ -64,7 +75,7 @@ function CreatePageContent() {
     setErrorMessage("");
 
     const controller = new AbortController();
-    setAbortController(controller);
+    abortControllerRef.current = controller;
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
@@ -121,18 +132,18 @@ function CreatePageContent() {
       setProgressPhase("error");
     } finally {
       clearTimeout(timeoutId);
-      setAbortController(null);
+      abortControllerRef.current = null;
     }
   }, [canGenerate, status, inputText, selectedStyles, showToast]);
 
   const handleCancel = useCallback(() => {
-    if (abortController) {
-      abortController.abort();
-      setAbortController(null);
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
     }
     setStatus("idle");
     setProgressPhase("idle");
-  }, [abortController]);
+  }, []);
 
   // Ctrl+Enter / Cmd+Enter shortcut to trigger generation
   useEffect(() => {
@@ -159,8 +170,7 @@ function CreatePageContent() {
 
       const num = parseInt(e.key);
       if (num >= 1 && num <= 4) {
-        const styles: MemeStyle[] = ["cute", "savage", "chill", "formal"];
-        const style = styles[num - 1];
+        const style = ALL_STYLES[num - 1];
         setSelectedStyles((prev) => {
           if (prev.includes(style)) {
             // Don't allow deselecting the last one
@@ -182,7 +192,7 @@ function CreatePageContent() {
     showToast("已开始下载", "success");
   }, [results, showToast]);
 
-  const handleCopyAll = useCallback(async () => {
+  const handleCopyFirst = useCallback(async () => {
     if (results.length === 0) return;
     try {
       const first = results[0];
@@ -209,10 +219,11 @@ function CreatePageContent() {
     setStatus("idle");
     setProgressPhase("idle");
     setErrorMessage("");
-    setTimeout(() => handleGenerate(), 100);
+    setTimeout(() => { if (isMountedRef.current) handleGenerate(); }, 100);
   }, [handleGenerate]);
 
   const handleRegenerateSingle = useCallback(async (style: MemeStyle) => {
+    if (status === 'generating') return;
     if (regeneratingStyle === style) return; // prevent double click
     setRegeneratingStyle(style);
 
@@ -245,7 +256,7 @@ function CreatePageContent() {
       clearTimeout(timeoutId);
       setRegeneratingStyle(null);
     }
-  }, [inputText, showToast, regeneratingStyle]);
+  }, [inputText, showToast, regeneratingStyle, status]);
 
   return (
     <>
@@ -288,7 +299,7 @@ function CreatePageContent() {
                 selectedStyles={selectedStyles}
                 errorMessage={errorMessage}
                 onDownloadAll={handleDownloadAll}
-                onCopyAll={handleCopyAll}
+                onCopyAll={handleCopyFirst}
                 onClear={handleClear}
                 onRetry={handleRetry}
                 onRegenerateSingle={handleRegenerateSingle}
@@ -296,6 +307,7 @@ function CreatePageContent() {
                 onEdit={(newItem) => {
                   setResults(prev => prev.map(r => r.style === newItem.style ? newItem : r));
                 }}
+                onPickExample={(text) => setInputText(text)}
               />
             </div>
           </div>

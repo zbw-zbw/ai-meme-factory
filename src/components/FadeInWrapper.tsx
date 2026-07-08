@@ -27,13 +27,19 @@ function getSharedObserver(threshold: number): IntersectionObserver {
 }
 
 /* Clean up on module unload (Safeguards against HMR) */
-if (typeof window !== "undefined") {
-  window.addEventListener("beforeunload", () => {
-    for (const obs of observerCache.values()) {
-      obs.disconnect();
-    }
-    observerCache.clear();
-  });
+function cleanupFadeInObservers() {
+  for (const obs of observerCache.values()) {
+    obs.disconnect();
+  }
+  observerCache.clear();
+}
+
+if (
+  typeof window !== "undefined" &&
+  !(window as Window & { __fadeInCleanupRegistered?: boolean }).__fadeInCleanupRegistered
+) {
+  (window as Window & { __fadeInCleanupRegistered?: boolean }).__fadeInCleanupRegistered = true;
+  window.addEventListener("beforeunload", cleanupFadeInObservers);
 }
 
 export default function FadeInWrapper({

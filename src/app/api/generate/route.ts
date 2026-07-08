@@ -122,7 +122,22 @@ async function generateMemeImage(
 export const maxDuration = 60; // Increased for image generation
 
 export async function POST(request: NextRequest) {
+  // CSRF protection: validate Origin header
+  const origin = request.headers.get('origin');
+  const allowedOrigins = ['https://ai-meme-factory.vercel.app', 'http://localhost:3000'];
+  if (process.env.NODE_ENV === 'production' && (!origin || !allowedOrigins.includes(origin))) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden', code: 'CSRF_DENIED' },
+      { status: 403 }
+    );
+  }
+
   cleanupRateLimit();
+
+  // Prevent unbounded Map growth
+  if (requestMap.size > 10000) {
+    requestMap.clear();
+  }
 
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   if (!checkRateLimit(ip)) {
@@ -159,20 +174,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: '风格选择无效', code: 'INVALID_STYLE' }, { status: 400 });
   }
 
+  // Limit to 4 styles max and deduplicate
+  const uniqueStyles = [...new Set(validStyles)];
+  if (uniqueStyles.length > 4) {
+    return NextResponse.json(
+      { success: false, error: '最多选择4种风格', code: 'TOO_MANY_STYLES' },
+      { status: 400 }
+    );
+  }
+
   const cleanText = text.trim();
 
   // Demo mode: no API keys configured
   if (!isApiKeyConfigured()) {
     return NextResponse.json({
       success: true,
-      data: { memes: generateMockResults(cleanText, validStyles), demoMode: true },
+      data: { memes: generateMockResults(cleanText, uniqueStyles), demoMode: true },
     });
   }
 
   // ===== Phase 1: Generate captions with DeepSeek =====
   let captionResults: MemeResult[];
   try {
-    const userPrompt = buildUserPrompt(cleanText, validStyles);
+    const userPrompt = buildUserPrompt(cleanText, uniqueStyles);
     const content = await callDeepSeek([
       { role: 'system', content: SYSTEM_PROMPT },
       { role: 'user', content: userPrompt },
@@ -191,22 +215,22 @@ export async function POST(request: NextRequest) {
 
     captionResults = [];
     for (const item of memesArray) {
-      const validated = validateMemeResult(item, validStyles);
+      const validated = validateMemeResult(item, uniqueStyles);
       if (validated) captionResults.push(validated);
     }
 
     // Fill missing styles with mock
-    for (const style of validStyles) {
+    for (const style of uniqueStyles) {
       if (!captionResults.find((r) => r.style === style)) {
         const mock = getMockCaption(cleanText, style);
         captionResults.push({ style, caption: mock.caption, icon: mock.icon });
       }
     }
   } catch (err) {
-    if (err instanceof DeepSeekError && err.code === 'API_KEY_MISSING') {
+    if (err instanceof DeepSeekError && (err.code === 'API_KEY_MISSING' || err.code === 'API_ERROR' || err.code === 'TIMEOUT')) {
       return NextResponse.json({
         success: true,
-        data: { memes: generateMockResults(cleanText, validStyles), demoMode: true },
+        data: { memes: generateMockResults(cleanText, uniqueStyles), demoMode: true },
       });
     }
     const errorMessage = err instanceof DeepSeekError

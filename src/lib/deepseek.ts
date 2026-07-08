@@ -33,6 +33,11 @@ export async function callDeepSeek(
     throw new DeepSeekError('API_KEY_MISSING', 'DeepSeek API key is not configured');
   }
 
+  // Validate URL scheme to prevent SSRF
+  if (!config.baseUrl.startsWith('https://')) {
+    throw new DeepSeekError('API_ERROR', 'API base URL must use HTTPS');
+  }
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), config.timeout);
 

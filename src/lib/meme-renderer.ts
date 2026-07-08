@@ -4,7 +4,35 @@ import { getStyleConfig } from './meme-styles';
 const CANVAS_SIZE = 480;
 const ICON_SIZE = 96;
 const LABEL_FONT_SIZE = 14;
-const DPR = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+
+function getDPR(): number {
+  return typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement, type = 'image/jpeg', quality = 0.85): Promise<string> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) { reject(new Error('toBlob failed')); return; }
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('FileReader failed'));
+        reader.readAsDataURL(blob);
+      },
+      type,
+      quality
+    );
+  });
+}
+
+const gradientCache = new Map<string, string[]>();
+function parseGradientColors(gradient: string): string[] {
+  const cached = gradientCache.get(gradient);
+  if (cached) return cached;
+  const matches = gradient.match(/#[0-9A-Fa-f]{6}/g) || [];
+  gradientCache.set(gradient, matches);
+  return matches;
+}
 
 // ===== SVG path data for each icon =====
 const iconPaths: Record<IconName, string> = {
@@ -18,8 +46,8 @@ function drawIcon(ctx: CanvasRenderingContext2D, icon: IconName, cx: number, cy:
   const pathData = iconPaths[icon];
   const path = new Path2D(pathData);
   ctx.save();
-  const scale = (size * DPR) / 24;
-  ctx.translate(cx * DPR, cy * DPR);
+  const scale = (size * getDPR()) / 24;
+  ctx.translate(cx * getDPR(), cy * getDPR());
   ctx.scale(scale, scale);
   ctx.translate(-12, -12);
   ctx.fillStyle = color;
@@ -29,9 +57,9 @@ function drawIcon(ctx: CanvasRenderingContext2D, icon: IconName, cx: number, cy:
 
 function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, color: string) {
   ctx.save();
-  const outerR = (size * DPR) / 2;
+  const outerR = (size * getDPR()) / 2;
   const innerR = outerR * 0.4;
-  ctx.translate(cx * DPR, cy * DPR);
+  ctx.translate(cx * getDPR(), cy * getDPR());
   ctx.beginPath();
   for (let i = 0; i < 10; i++) {
     const r = i % 2 === 0 ? outerR : innerR;
@@ -67,19 +95,14 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
 
 function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: number) {
   const config = getStyleConfig(style);
-  const stopColors: string[] = [];
-  const regex = /#[0-9A-Fa-f]{6}/g;
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(config.bgGradient)) !== null) {
-    stopColors.push(match[0]);
-  }
+  const stopColors = parseGradientColors(config.bgGradient);
 
-  const gradient = ctx.createLinearGradient(0, 0, size * DPR, size * DPR);
+  const gradient = ctx.createLinearGradient(0, 0, size * getDPR(), size * getDPR());
   stopColors.forEach((color, i) => {
     gradient.addColorStop(i / Math.max(stopColors.length - 1, 1), color);
   });
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, size * DPR, size * DPR);
+  ctx.fillRect(0, 0, size * getDPR(), size * getDPR());
 
   // Style-specific decorative patterns
   if (style === 'cute') {
@@ -106,49 +129,49 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
     ctx.globalAlpha = 1;
     ctx.globalAlpha = 0.15;
     ctx.strokeStyle = config.accentColor;
-    ctx.lineWidth = 3 * DPR;
-    const r = 20 * DPR;
+    ctx.lineWidth = 3 * getDPR();
+    const r = 20 * getDPR();
     ctx.beginPath();
-    ctx.roundRect(8 * DPR, 8 * DPR, size * DPR - 16 * DPR, size * DPR - 16 * DPR, r);
+    ctx.roundRect(8 * getDPR(), 8 * getDPR(), size * getDPR() - 16 * getDPR(), size * getDPR() - 16 * getDPR(), r);
     ctx.stroke();
     ctx.globalAlpha = 1;
   } else if (style === 'savage') {
     ctx.globalAlpha = 0.06;
     ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 2 * DPR;
+    ctx.lineWidth = 2 * getDPR();
     for (let i = -size; i < size * 2; i += 24) {
       ctx.beginPath();
-      ctx.moveTo((i + 0) * DPR, 0);
-      ctx.lineTo((i + size) * DPR, size * DPR);
+      ctx.moveTo((i + 0) * getDPR(), 0);
+      ctx.lineTo((i + size) * getDPR(), size * getDPR());
       ctx.stroke();
     }
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = config.accentColor;
-    ctx.fillRect(0, 0, size * DPR, 6 * DPR);
-    ctx.fillRect(0, (size - 6) * DPR, size * DPR, 6 * DPR);
+    ctx.fillRect(0, 0, size * getDPR(), 6 * getDPR());
+    ctx.fillRect(0, (size - 6) * getDPR(), size * getDPR(), 6 * getDPR());
     ctx.globalAlpha = 1;
     ctx.globalAlpha = 0.3;
     ctx.strokeStyle = config.accentColor;
-    ctx.lineWidth = 3 * DPR;
-    const bLen = 40 * DPR;
-    const inset = 20 * DPR;
+    ctx.lineWidth = 3 * getDPR();
+    const bLen = 40 * getDPR();
+    const inset = 20 * getDPR();
     ctx.beginPath(); ctx.moveTo(inset, inset + bLen); ctx.lineTo(inset, inset); ctx.lineTo(inset + bLen, inset); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(size * DPR - inset - bLen, inset); ctx.lineTo(size * DPR - inset, inset); ctx.lineTo(size * DPR - inset, inset + bLen); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(inset, size * DPR - inset - bLen); ctx.lineTo(inset, size * DPR - inset); ctx.lineTo(inset + bLen, size * DPR - inset); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(size * DPR - inset - bLen, size * DPR - inset); ctx.lineTo(size * DPR - inset, size * DPR - inset); ctx.lineTo(size * DPR - inset, size * DPR - inset - bLen); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(size * getDPR() - inset - bLen, inset); ctx.lineTo(size * getDPR() - inset, inset); ctx.lineTo(size * getDPR() - inset, inset + bLen); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(inset, size * getDPR() - inset - bLen); ctx.lineTo(inset, size * getDPR() - inset); ctx.lineTo(inset + bLen, size * getDPR() - inset); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(size * getDPR() - inset - bLen, size * getDPR() - inset); ctx.lineTo(size * getDPR() - inset, size * getDPR() - inset); ctx.lineTo(size * getDPR() - inset, size * getDPR() - inset - bLen); ctx.stroke();
     ctx.globalAlpha = 1;
     // Add lightning bolt accents
     ctx.globalAlpha = 0.08;
     ctx.strokeStyle = config.accentColor;
-    ctx.lineWidth = 2 * DPR;
+    ctx.lineWidth = 2 * getDPR();
     for (let i = 0; i < 3; i++) {
-      const sx = (0.15 + i * 0.35) * size * DPR;
-      const sy = (0.3 + i * 0.15) * size * DPR;
+      const sx = (0.15 + i * 0.35) * size * getDPR();
+      const sy = (0.3 + i * 0.15) * size * getDPR();
       ctx.beginPath();
       ctx.moveTo(sx, sy);
-      ctx.lineTo(sx - 8 * DPR, sy + 12 * DPR);
-      ctx.lineTo(sx + 4 * DPR, sy + 12 * DPR);
-      ctx.lineTo(sx - 4 * DPR, sy + 20 * DPR);
+      ctx.lineTo(sx - 8 * getDPR(), sy + 12 * getDPR());
+      ctx.lineTo(sx + 4 * getDPR(), sy + 12 * getDPR());
+      ctx.lineTo(sx - 4 * getDPR(), sy + 20 * getDPR());
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
@@ -157,14 +180,14 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
     ctx.fillStyle = config.accentColor;
     for (let layer = 0; layer < 3; layer++) {
       ctx.beginPath();
-      const waveY = (size * (0.75 + layer * 0.08)) * DPR;
+      const waveY = (size * (0.75 + layer * 0.08)) * getDPR();
       ctx.moveTo(0, waveY);
-      for (let x = 0; x <= size * DPR; x += DPR) {
-        const waveHeight = Math.sin((x / DPR / size) * Math.PI * 3 + layer) * (10 + layer * 4) * DPR;
+      for (let x = 0; x <= size * getDPR(); x += getDPR()) {
+        const waveHeight = Math.sin((x / getDPR() / size) * Math.PI * 3 + layer) * (10 + layer * 4) * getDPR();
         ctx.lineTo(x, waveY + waveHeight);
       }
-      ctx.lineTo(size * DPR, size * DPR);
-      ctx.lineTo(0, size * DPR);
+      ctx.lineTo(size * getDPR(), size * getDPR());
+      ctx.lineTo(0, size * getDPR());
       ctx.closePath();
       ctx.fill();
     }
@@ -175,7 +198,7 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
       const x = (0.1 + (i % 4) * 0.25) * size;
       const y = (0.08 + Math.floor(i / 4) * 0.08) * size;
       ctx.beginPath();
-      ctx.arc(x * DPR, y * DPR, 4 * DPR, 0, Math.PI * 2);
+      ctx.arc(x * getDPR(), y * getDPR(), 4 * getDPR(), 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
@@ -190,28 +213,28 @@ function drawBackground(ctx: CanvasRenderingContext2D, style: MemeStyle, size: n
   } else if (style === 'formal') {
     ctx.globalAlpha = 0.05;
     ctx.strokeStyle = config.accentColor;
-    ctx.lineWidth = 1 * DPR;
-    const gridStep = 30 * DPR;
-    for (let x = 0; x <= size * DPR; x += gridStep) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, size * DPR); ctx.stroke();
+    ctx.lineWidth = 1 * getDPR();
+    const gridStep = 30 * getDPR();
+    for (let x = 0; x <= size * getDPR(); x += gridStep) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, size * getDPR()); ctx.stroke();
     }
-    for (let y = 0; y <= size * DPR; y += gridStep) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size * DPR, y); ctx.stroke();
+    for (let y = 0; y <= size * getDPR(); y += gridStep) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size * getDPR(), y); ctx.stroke();
     }
     ctx.globalAlpha = 1;
     ctx.globalAlpha = 0.2;
     ctx.strokeStyle = config.accentColor;
-    ctx.lineWidth = 2 * DPR;
-    ctx.strokeRect(12 * DPR, 12 * DPR, (size - 24) * DPR, (size - 24) * DPR);
-    ctx.lineWidth = 1 * DPR;
-    ctx.strokeRect(18 * DPR, 18 * DPR, (size - 36) * DPR, (size - 36) * DPR);
+    ctx.lineWidth = 2 * getDPR();
+    ctx.strokeRect(12 * getDPR(), 12 * getDPR(), (size - 24) * getDPR(), (size - 24) * getDPR());
+    ctx.lineWidth = 1 * getDPR();
+    ctx.strokeRect(18 * getDPR(), 18 * getDPR(), (size - 36) * getDPR(), (size - 36) * getDPR());
     ctx.globalAlpha = 1;
     // Subtle diagonal "MEME" watermark
     ctx.globalAlpha = 0.03;
     ctx.save();
-    ctx.font = `900 ${80 * DPR}px "Noto Sans SC", sans-serif`;
+    ctx.font = `900 ${80 * getDPR()}px "Noto Sans SC", sans-serif`;
     ctx.fillStyle = config.accentColor;
-    ctx.translate(size * DPR * 0.5, size * DPR * 0.5);
+    ctx.translate(size * getDPR() * 0.5, size * getDPR() * 0.5);
     ctx.rotate(-Math.PI / 6);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -229,34 +252,34 @@ function drawCaption(
   textY?: number, // Override for AI image mode
 ): number {
   const config = getStyleConfig(style);
-  const maxLineWidth = size * 0.82 * DPR;
+  const maxLineWidth = size * 0.82 * getDPR();
 
-  ctx.font = `${config.fontWeight} ${config.fontSize * DPR}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
+  ctx.font = `${config.fontWeight} ${config.fontSize * getDPR()}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   const cleanCaption = caption.replace(/\n/g, ' ');
   const lines = wrapText(ctx, cleanCaption, maxLineWidth);
-  const lineHeight = config.fontSize * 1.4 * DPR;
+  const lineHeight = config.fontSize * 1.4 * getDPR();
   const totalHeight = lines.length * lineHeight;
-  const baseY = (textY !== undefined ? textY : size * 0.7) * DPR;
+  const baseY = (textY !== undefined ? textY : size * 0.7) * getDPR();
   const startY = baseY - totalHeight / 2 + lineHeight / 2;
 
   if (style === 'savage') {
     ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 4 * DPR;
+    ctx.lineWidth = 4 * getDPR();
     ctx.lineJoin = 'round';
     lines.forEach((line, i) => {
-      ctx.strokeText(line, (size * 0.5) * DPR, startY + i * lineHeight);
+      ctx.strokeText(line, (size * 0.5) * getDPR(), startY + i * lineHeight);
     });
   } else if (style === 'cute') {
     ctx.save();
     ctx.shadowColor = 'rgba(190, 18, 60, 0.15)';
-    ctx.shadowBlur = 4 * DPR;
-    ctx.shadowOffsetY = 2 * DPR;
+    ctx.shadowBlur = 4 * getDPR();
+    ctx.shadowOffsetY = 2 * getDPR();
     ctx.fillStyle = config.textColor;
     lines.forEach((line, i) => {
-      ctx.fillText(line, (size * 0.5) * DPR, startY + i * lineHeight);
+      ctx.fillText(line, (size * 0.5) * getDPR(), startY + i * lineHeight);
     });
     ctx.restore();
     return lines.length;
@@ -264,7 +287,7 @@ function drawCaption(
 
   ctx.fillStyle = config.textColor;
   lines.forEach((line, i) => {
-    ctx.fillText(line, (size * 0.5) * DPR, startY + i * lineHeight);
+    ctx.fillText(line, (size * 0.5) * getDPR(), startY + i * lineHeight);
   });
 
   return lines.length;
@@ -273,15 +296,15 @@ function drawCaption(
 function drawLabel(ctx: CanvasRenderingContext2D, style: MemeStyle, size: number) {
   const config = getStyleConfig(style);
   const label = config.name;
-  const paddingX = 18 * DPR;
-  const paddingY = 7 * DPR;
-  const labelY = (size * 0.92) * DPR;
+  const paddingX = 18 * getDPR();
+  const paddingY = 7 * getDPR();
+  const labelY = (size * 0.92) * getDPR();
 
-  ctx.font = `600 ${LABEL_FONT_SIZE * DPR}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
+  ctx.font = `600 ${LABEL_FONT_SIZE * getDPR()}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
   const textWidth = ctx.measureText(label).width;
   const boxWidth = textWidth + paddingX * 2;
-  const boxHeight = LABEL_FONT_SIZE * DPR + paddingY * 2;
-  const boxX = (size * DPR - boxWidth) / 2;
+  const boxHeight = LABEL_FONT_SIZE * getDPR() + paddingY * 2;
+  const boxX = (size * getDPR() - boxWidth) / 2;
   const boxY = labelY - boxHeight / 2;
   const radius = boxHeight / 2;
 
@@ -295,17 +318,17 @@ function drawLabel(ctx: CanvasRenderingContext2D, style: MemeStyle, size: number
   ctx.fillStyle = '#FFFFFF';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(label, (size * 0.5) * DPR, labelY);
+  ctx.fillText(label, (size * 0.5) * getDPR(), labelY);
 }
 
 function drawBrandWatermark(ctx: CanvasRenderingContext2D, style: MemeStyle, size: number) {
   const config = getStyleConfig(style);
-  ctx.font = `400 ${10 * DPR}px "Noto Sans SC", sans-serif`;
+  ctx.font = `400 ${10 * getDPR()}px "Noto Sans SC", sans-serif`;
   ctx.textAlign = 'right';
   ctx.textBaseline = 'bottom';
   ctx.globalAlpha = style === 'savage' ? 0.3 : 0.2;
   ctx.fillStyle = style === 'savage' ? '#FFFFFF' : config.accentColor;
-  ctx.fillText('AI表情包工厂', (size - 16) * DPR, (size - 14) * DPR);
+  ctx.fillText('AI表情包工厂', (size - 16) * getDPR(), (size - 14) * getDPR());
   ctx.globalAlpha = 1;
 }
 
@@ -326,17 +349,17 @@ async function renderCanvasOnly(
   const config = getStyleConfig(style);
   const canvas = document.createElement('canvas');
   const displaySize = CANVAS_SIZE;
-  canvas.width = displaySize * DPR;
-  canvas.height = displaySize * DPR;
+  canvas.width = displaySize * getDPR();
+  canvas.height = displaySize * getDPR();
 
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Failed to get canvas context');
 
   // Rounded corner clipping
-  const cornerRadius = 24 * DPR;
+  const cornerRadius = 24 * getDPR();
   ctx.save();
   ctx.beginPath();
-  ctx.roundRect(0, 0, displaySize * DPR, displaySize * DPR, cornerRadius);
+  ctx.roundRect(0, 0, displaySize * getDPR(), displaySize * getDPR(), cornerRadius);
   ctx.clip();
 
   drawBackground(ctx, style, displaySize);
@@ -349,7 +372,7 @@ async function renderCanvasOnly(
   ctx.globalAlpha = 0.12;
   ctx.fillStyle = config.accentColor;
   ctx.beginPath();
-  ctx.arc(iconCx * DPR, iconCy * DPR, badgeRadius * DPR, 0, Math.PI * 2);
+  ctx.arc(iconCx * getDPR(), iconCy * getDPR(), badgeRadius * getDPR(), 0, Math.PI * 2);
   ctx.fill();
   ctx.globalAlpha = 1;
   ctx.restore();
@@ -361,13 +384,17 @@ async function renderCanvasOnly(
 
   ctx.restore();
 
+  const dataUrl = await canvasToBlob(canvas, 'image/jpeg', 0.85);
+  canvas.width = 0;
+  canvas.height = 0;
+
   return {
     id: `meme-${style}-${Date.now()}`,
     style,
     originalText: text,
     caption,
     icon,
-    dataUrl: canvas.toDataURL('image/jpeg', 0.85),
+    dataUrl,
     createdAt: Date.now(),
   };
 }
@@ -383,12 +410,12 @@ function renderWithAIImage(
   icon: IconName,
   imageUrl: string,
 ): Promise<MemeItem> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const config = getStyleConfig(style);
     const canvas = document.createElement('canvas');
     const displaySize = CANVAS_SIZE;
-    canvas.width = displaySize * DPR;
-    canvas.height = displaySize * DPR;
+    canvas.width = displaySize * getDPR();
+    canvas.height = displaySize * getDPR();
 
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -399,12 +426,14 @@ function renderWithAIImage(
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    img.onload = () => {
+    const imgTimeout = setTimeout(() => reject(new Error('Image load timeout')), 30000);
+    img.onload = async () => {
+      clearTimeout(imgTimeout);
       // Rounded corner clipping
-      const cornerRadius = 24 * DPR;
+      const cornerRadius = 24 * getDPR();
       ctx.save();
       ctx.beginPath();
-      ctx.roundRect(0, 0, displaySize * DPR, displaySize * DPR, cornerRadius);
+      ctx.roundRect(0, 0, displaySize * getDPR(), displaySize * getDPR(), cornerRadius);
       ctx.clip();
 
       // Draw AI image as full background (cover mode)
@@ -417,7 +446,7 @@ function renderWithAIImage(
         sw = img.height;
         sx = (img.width - sw) / 2;
       }
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, displaySize * DPR, displaySize * DPR);
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, displaySize * getDPR(), displaySize * getDPR());
 
       // Semi-transparent overlay for text readability
       ctx.fillStyle = style === 'savage'
@@ -427,22 +456,22 @@ function renderWithAIImage(
           : style === 'chill'
             ? 'rgba(236, 254, 255, 0.35)'
             : 'rgba(248, 250, 252, 0.4)';
-      ctx.fillRect(0, 0, displaySize * DPR, displaySize * DPR);
+      ctx.fillRect(0, 0, displaySize * getDPR(), displaySize * getDPR());
 
       // Style-specific border accent
       if (style === 'savage') {
         ctx.fillStyle = config.accentColor;
         ctx.globalAlpha = 0.8;
-        ctx.fillRect(0, 0, displaySize * DPR, 5 * DPR);
-        ctx.fillRect(0, (displaySize - 5) * DPR, displaySize * DPR, 5 * DPR);
+        ctx.fillRect(0, 0, displaySize * getDPR(), 5 * getDPR());
+        ctx.fillRect(0, (displaySize - 5) * getDPR(), displaySize * getDPR(), 5 * getDPR());
         ctx.globalAlpha = 1;
       } else {
         ctx.globalAlpha = 0.2;
         ctx.strokeStyle = config.accentColor;
-        ctx.lineWidth = 3 * DPR;
-        const r = 16 * DPR;
+        ctx.lineWidth = 3 * getDPR();
+        const r = 16 * getDPR();
         ctx.beginPath();
-        ctx.roundRect(6 * DPR, 6 * DPR, displaySize * DPR - 12 * DPR, displaySize * DPR - 12 * DPR, r);
+        ctx.roundRect(6 * getDPR(), 6 * getDPR(), displaySize * getDPR() - 12 * getDPR(), displaySize * getDPR() - 12 * getDPR(), r);
         ctx.stroke();
         ctx.globalAlpha = 1;
       }
@@ -451,30 +480,30 @@ function renderWithAIImage(
       // Add dark shadow for readability on image background
       ctx.save();
       ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-      ctx.shadowBlur = 6 * DPR;
+      ctx.shadowBlur = 6 * getDPR();
       ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 2 * DPR;
+      ctx.shadowOffsetY = 2 * getDPR();
 
       // Force white text on AI images for contrast
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = `${config.fontWeight} ${config.fontSize * DPR}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
+      ctx.font = `${config.fontWeight} ${config.fontSize * getDPR()}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const maxLineWidth = displaySize * 0.82 * DPR;
+      const maxLineWidth = displaySize * 0.82 * getDPR();
       const cleanCaption = caption.replace(/\n/g, ' ');
       const lines = wrapText(ctx, cleanCaption, maxLineWidth);
-      const lineHeight = config.fontSize * 1.5 * DPR;
+      const lineHeight = config.fontSize * 1.5 * getDPR();
       const totalHeight = lines.length * lineHeight;
-      const startY = (displaySize * 0.72) * DPR - totalHeight / 2 + lineHeight / 2;
+      const startY = (displaySize * 0.72) * getDPR() - totalHeight / 2 + lineHeight / 2;
 
       // Black stroke for all text on image
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.lineWidth = 3 * DPR;
+      ctx.lineWidth = 3 * getDPR();
       ctx.lineJoin = 'round';
       lines.forEach((line, i) => {
         const y = startY + i * lineHeight;
-        ctx.strokeText(line, (displaySize * 0.5) * DPR, y);
+        ctx.strokeText(line, (displaySize * 0.5) * getDPR(), y);
       });
 
       ctx.restore();
@@ -487,18 +516,23 @@ function renderWithAIImage(
 
       ctx.restore();
 
+      const dataUrl = await canvasToBlob(canvas, 'image/jpeg', 0.85);
+      canvas.width = 0;
+      canvas.height = 0;
+
       resolve({
         id: `meme-${style}-${Date.now()}`,
         style,
         originalText: text,
         caption,
         icon,
-        dataUrl: canvas.toDataURL('image/jpeg', 0.85),
+        dataUrl,
         createdAt: Date.now(),
       });
     };
 
     img.onerror = () => {
+      clearTimeout(imgTimeout);
       // Fallback to canvas-only rendering
       resolve(renderCanvasOnly(text, style, caption, icon));
     };
@@ -535,14 +569,16 @@ export function downloadMeme(item: MemeItem, format: "jpeg" | "png" = "jpeg"): v
   // The dataUrl is already JPEG, so for PNG we need to convert via canvas
   if (format === "png" && item.dataUrl.startsWith("data:image/jpeg")) {
     const img = new Image();
-    img.onload = () => {
+    img.onload = async () => {
       const canvas = document.createElement("canvas");
       canvas.width = img.width;
       canvas.height = img.height;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(img, 0, 0);
-        link.href = canvas.toDataURL("image/png");
+        link.href = await canvasToBlob(canvas, "image/png", 1);
+        canvas.width = 0;
+        canvas.height = 0;
         link.download = `${item.caption.slice(0, 12)}-${item.style}.${ext}`;
         link.click();
       }
@@ -687,7 +723,6 @@ let _cachedExamples: MemeItem[] | null = null;
 export async function preRenderExamples(): Promise<MemeItem[]> {
   if (typeof document === 'undefined') return [];
   if (_cachedExamples) return _cachedExamples;
-  await document.fonts.ready;
 
   const examples = [
     { text: '不想上班', style: 'cute' as MemeStyle, caption: '好想抱抱毛绒玩具', icon: 'heart' as IconName },
@@ -711,7 +746,6 @@ let _cachedDemoExamples: MemeItem[] | null = null;
 export async function preRenderDemoExamples(): Promise<MemeItem[]> {
   if (typeof document === 'undefined') return [];
   if (_cachedDemoExamples) return _cachedDemoExamples;
-  await document.fonts.ready;
 
   const examples = [
     { text: '这个需求能不能别改了', style: 'cute' as MemeStyle, caption: '改需求不乖哦', icon: 'heart' as IconName },

@@ -122,7 +122,7 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating, 
             onChange={(e) => setEditText(e.target.value)}
             className="w-full resize-none rounded-xl border-2 border-border-light bg-bg p-3 text-[0.9rem] text-text-dark focus:border-primary focus:outline-none"
             rows={2}
-            maxLength={50}
+            maxLength={100}
             autoFocus
           />
           <div className="mt-2 flex justify-end gap-2">
@@ -155,7 +155,7 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating, 
             <button
               onClick={() => onRegenerate(item.style)}
               disabled={isRegenerating}
-              className="inline-flex items-center gap-1 rounded-lg bg-card-hover px-2 py-1 text-[0.7rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center gap-1 rounded-lg bg-card-hover p-2 text-[0.7rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               title="重新生成"
               aria-label="重新生成"
             >
@@ -165,7 +165,7 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating, 
           {onEdit && (
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="inline-flex items-center gap-1 rounded-lg bg-card-hover px-2 py-1 text-[0.7rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
+              className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center gap-1 rounded-lg bg-card-hover p-2 text-[0.7rem] font-medium text-text-muted transition-colors hover:text-text-dark cursor-pointer"
               aria-label="编辑文案"
               title="编辑文案"
             >
@@ -215,6 +215,8 @@ export default function MemeResult({ item, index, onRegenerate, isRegenerating, 
               src={item.dataUrl}
               alt={item.caption}
               className="max-h-[85vh] max-w-[85vw] rounded-2xl shadow-2xl"
+              loading="lazy"
+              decoding="async"
             />
             <button
               onClick={() => setShowLightbox(false)}

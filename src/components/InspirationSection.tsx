@@ -52,7 +52,7 @@ export default function InspirationSection() {
             </p>
             <button
               onClick={handleShuffle}
-              className="glass-card mt-3 inline-flex items-center gap-1 rounded-lg bg-card-hover px-3 py-1.5 text-[0.8rem] text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
+              className="glass-card mt-3 inline-flex items-center gap-1 rounded-lg bg-card-hover px-3 py-2.5 text-[0.8rem] text-text-muted transition-colors hover:text-text-dark cursor-pointer border-none"
             >
               换一批
             </button>
@@ -65,7 +65,7 @@ export default function InspirationSection() {
               <Link
                 key={item.text}
                 href={`/create?text=${encodeURIComponent(item.text)}`}
-                className={`inline-block rounded-[20px] border border-border bg-card px-5 py-2.5 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 hover:scale-105 ${item.color} hover:bg-card-hover hover:shadow-md`}
+                className={`inline-block rounded-[20px] border border-border bg-card px-5 py-3 text-[0.9rem] font-medium text-text-dark no-underline shadow-sm transition-all duration-500 hover:scale-105 ${item.color} hover:bg-card-hover hover:shadow-md`}
               >
                 {item.text}
               </Link>

@@ -40,13 +40,13 @@ export default function ThemeToggle() {
   };
 
   if (!mounted) {
-    return <div className="h-9 w-9" />;
+    return <div className="h-11 w-11" />;
   }
 
   return (
     <button
       onClick={toggle}
-      className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-card-hover hover:text-primary cursor-pointer border-none bg-transparent"
+      className="flex h-11 w-11 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-card-hover hover:text-primary cursor-pointer border-none bg-transparent"
       aria-label={isDark ? "切换到浅色模式" : "切换到深色模式"}
       title={isDark ? "浅色模式" : "深色模式"}
     >

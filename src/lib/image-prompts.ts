@@ -44,6 +44,7 @@ function pickRandom<T>(arr: T[]): T {
 
 const styleImagePrompts: Record<MemeStyle, (text: string, caption: string) => string> = {
   cute: (text, caption) =>
+    `Original user input: "${text}". AI-generated caption: "${caption}". ` +
     `A cute chibi cartoon sticker illustration of "${caption}". ` +
     `Kawaii style, pastel pink background, soft rounded shapes, ` +
     `big sparkly eyes, rosy cheeks, floating hearts and stars, ` +
@@ -52,6 +53,7 @@ const styleImagePrompts: Record<MemeStyle, (text: string, caption: string) => st
     `vibrant but soft colors, simple clean composition, no text`,
 
   savage: (text, caption) =>
+    `Original user input: "${text}". AI-generated caption: "${caption}". ` +
     `A spicy sarcastic cartoon sticker illustration of "${caption}". ` +
     `Dark moody background with red accents, sharp angular shapes, ` +
     `comic book style, bold dramatic lighting, ` +
@@ -61,6 +63,7 @@ const styleImagePrompts: Record<MemeStyle, (text: string, caption: string) => st
     `intense vivid colors, no text`,
 
   chill: (text, caption) =>
+    `Original user input: "${text}". AI-generated caption: "${caption}". ` +
     `A relaxed lazy cartoon sticker illustration of "${caption}". ` +
     `Cool blue and teal background, wavy organic shapes, ` +
     `lo-fi aesthetic, chill vibes, fish or ocean elements, ` +
@@ -70,6 +73,7 @@ const styleImagePrompts: Record<MemeStyle, (text: string, caption: string) => st
     `calming cool colors, no text`,
 
   formal: (text, caption) =>
+    `Original user input: "${text}". AI-generated caption: "${caption}". ` +
     `A professional but humorous cartoon sticker illustration of "${caption}". ` +
     `Clean light gray and navy background, geometric shapes, ` +
     `minimalist illustration style, office setting elements, ` +

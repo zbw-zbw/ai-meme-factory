@@ -86,14 +86,14 @@ export default function Navbar() {
             href="/create"
             className="btn-primary rounded-lg px-5 py-2 text-sm font-bold no-underline"
           >
-            开始制作
+            {pathname === "/create" ? "再做一批" : "开始制作"}
           </Link>
         </div>
 
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center justify-center md:hidden"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 md:hidden"
           aria-label="切换菜单"
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
@@ -144,7 +144,7 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
             className="btn-primary mt-1 rounded-lg px-5 py-2.5 text-center text-sm font-bold no-underline"
           >
-            开始制作
+            {pathname === "/create" ? "再做一批" : "开始制作"}
           </Link>
         </div>
       </div>

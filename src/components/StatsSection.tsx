@@ -10,10 +10,11 @@ const stats = [
   { value: 0, label: "注册费用", suffix: "元" },
 ];
 
-function CountUp({ target, duration = 1500 }: { target: number; duration?: number }) {
+function CountUp({ target, duration = 1500, suffix = "" }: { target: number; duration?: number; suffix?: string }) {
   const [count, setCount] = useState(0);
   const started = useRef(false);
   const ref = useRef<HTMLSpanElement>(null);
+  const rafRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,21 +33,28 @@ function CountUp({ target, duration = 1500 }: { target: number; duration?: numbe
             const eased = 1 - Math.pow(1 - progress, 3);
             setCount(Math.floor(eased * target));
             if (progress < 1) {
-              requestAnimationFrame(animate);
+              rafRef.current = requestAnimationFrame(animate);
             } else {
               setCount(target);
             }
           };
-          requestAnimationFrame(animate);
+          rafRef.current = requestAnimationFrame(animate);
         }
       },
       { threshold: 0.3 }
     );
     if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [target, duration]);
 
-  return <span ref={ref}>{count}</span>;
+  return (
+    <span ref={ref} aria-label={`${target}${suffix}`} aria-live="off">
+      {count}
+    </span>
+  );
 }
 
 export default function StatsSection() {
@@ -65,7 +73,7 @@ export default function StatsSection() {
               >
                 <div className="animate-pulse-glow flex items-baseline gap-0.5">
                   <span className="font-display text-[3rem] font-normal gradient-title sm:text-[3.5rem]">
-                    <CountUp target={stat.value} duration={stat.value <= 10 ? 600 : 1500} />
+                    <CountUp target={stat.value} duration={stat.value <= 10 ? 600 : 1500} suffix={stat.suffix} />
                   </span>
                   <span className="text-[1.1rem] font-bold text-text-muted">
                     {stat.suffix}

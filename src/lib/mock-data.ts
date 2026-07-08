@@ -190,11 +190,3 @@ export function getMockCaption(text: string, style: MemeStyle): MockResult {
   }
   return defaultResults[style];
 }
-
-export function getMockData(text: string, styles: MemeStyle[]): Record<MemeStyle, MockResult> {
-  const result = {} as Record<MemeStyle, MockResult>;
-  for (const style of styles) {
-    result[style] = getMockCaption(text, style);
-  }
-  return result;
-}

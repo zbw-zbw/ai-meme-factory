@@ -28,6 +28,7 @@ interface MemeResultGridProps {
   onRegenerateSingle?: (style: MemeStyle) => void;
   regeneratingStyle?: MemeStyle | null;
   onEdit?: (item: MemeItem) => void;
+  onPickExample?: (text: string) => void;
 }
 
 const skeletonBgMap: Record<MemeStyle, string> = {
@@ -66,6 +67,7 @@ export default function MemeResultGrid({
   onRegenerateSingle,
   regeneratingStyle,
   onEdit,
+  onPickExample,
 }: MemeResultGridProps) {
   // Empty state
   if (status === "idle" && results.length === 0) {
@@ -86,12 +88,14 @@ export default function MemeResultGrid({
           {/* Quick example prompts */}
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {["好累啊", "不想上班", "今天也要加油", "干饭人干饭魂"].map((prompt) => (
-              <span
+              <button
                 key={prompt}
-                className="rounded-full bg-card-hover px-3.5 py-1.5 text-[0.8rem] text-text-muted transition-colors hover:bg-primary-light/30 hover:text-primary-dark cursor-default"
+                type="button"
+                className="rounded-full bg-card-hover px-3.5 py-1.5 text-[0.8rem] text-text-muted cursor-pointer transition-colors hover:bg-primary/10"
+                onClick={() => onPickExample?.(prompt)}
               >
                 {prompt}
-              </span>
+              </button>
             ))}
           </div>
         </div>
@@ -239,7 +243,7 @@ export default function MemeResultGrid({
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-card px-4 py-2.5 text-[0.9rem] font-medium text-text-muted shadow-sm border border-border-light transition-all duration-200 hover:text-text-dark hover:shadow-md cursor-pointer"
           >
             <CopyIcon className="h-4 w-4" />
-            复制首张
+            复制第一张
           </button>
           <button
             onClick={onClear}

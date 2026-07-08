@@ -106,7 +106,12 @@ export default function DemoSection() {
                 )}
               </div>
               <button
-                className={`shrink-0 rounded-xl px-5 py-2 text-[0.9rem] font-bold transition-all duration-300 no-underline ${
+                onClick={() => {
+                  if (!btnActive) return;
+                  setTypingDone(true);
+                  setShowCards(true);
+                }}
+                className={`min-h-[44px] shrink-0 rounded-xl px-5 py-2 text-[0.9rem] font-bold transition-all duration-300 no-underline ${
                   btnActive
                     ? "text-white shadow-sm cursor-pointer"
                     : "bg-border-light text-text-light cursor-default"
@@ -119,7 +124,7 @@ export default function DemoSection() {
 
             {/* Skeleton placeholder while examples load (prevents CLS) */}
             {showCards && examples.length === 0 && (
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
+              <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
                 {[0, 1, 2, 3].map(i => (
                   <div key={i} className="aspect-square animate-pulse rounded-2xl bg-card-hover" />
                 ))}
@@ -128,7 +133,7 @@ export default function DemoSection() {
 
             {/* Real Canvas-rendered meme results */}
             {showCards && examples.length > 0 && (
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
+              <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
                 {examples.map((item, i) => (
                   <div
                     key={item.id}
@@ -142,6 +147,7 @@ export default function DemoSection() {
                       src={item.dataUrl}
                       alt={item.caption}
                       className="aspect-square w-full object-cover"
+                      loading="lazy"
                     />
                     <span className="ai-label absolute right-2 top-2">AI</span>
                   </div>

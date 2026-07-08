@@ -12,7 +12,12 @@ export default function HeroSection() {
 
   useEffect(() => {
     setMounted(true);
-    preRenderExamples().then(setExamples);
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const id = requestIdleCallback(() => { preRenderExamples().then(setExamples); });
+      return () => cancelIdleCallback(id as number);
+    } else {
+      preRenderExamples().then(setExamples);
+    }
   }, []);
 
   return (

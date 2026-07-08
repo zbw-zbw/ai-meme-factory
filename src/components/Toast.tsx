@@ -4,6 +4,8 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -40,6 +42,7 @@ const typeStyles: Record<ToastType, string> = {
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const timersRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
   const showToast = useCallback((message: string, type: ToastType = "info") => {
     const id = nextId++;
@@ -52,9 +55,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     });
 
     // Auto-dismiss (error: 4s, others: 2.5s)
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
+      timersRef.current.delete(timer);
     }, duration);
+    timersRef.current.add(timer);
+  }, []);
+
+  // Clear all pending timers on unmount
+  useEffect(() => {
+    const timers = timersRef.current;
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+      timers.clear();
+    };
   }, []);
 
   const dismiss = useCallback((id: number) => {
@@ -66,7 +80,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
 
       {/* Toast container - fixed at bottom center, z-[10000] */}
-      <div className="fixed bottom-6 left-1/2 z-[10000] flex -translate-x-1/2 flex-col items-center gap-2 pointer-events-none">
+      <div
+        role="region"
+        aria-live="polite"
+        className="fixed bottom-6 left-1/2 z-[10000] flex -translate-x-1/2 flex-col items-center gap-2 pointer-events-none"
+      >
         {toasts.map((toast) => {
           const duration = toast.type === "error" ? 4000 : 2500;
           const outDelay = (duration - 300) / 1000;
@@ -74,6 +92,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <div
               key={toast.id}
               onClick={() => dismiss(toast.id)}
+              role={toast.type === "error" ? "alert" : undefined}
               className={`pointer-events-auto cursor-pointer rounded-lg px-5 py-3 text-sm font-medium shadow-lg ${typeStyles[toast.type]}`}
               style={{
                 animation: `toast-in 0.3s ease-out both, toast-out 0.3s ease-in ${outDelay}s both`,

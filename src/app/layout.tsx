@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Sans_SC, ZCOOL_KuaiLe, Fredoka, Nunito } from "next/font/google";
+import { Noto_Sans_SC, Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/Toast";
 import BackToTop from "@/components/BackToTop";
@@ -10,21 +10,15 @@ const notoSansSC = Noto_Sans_SC({
   display: "swap",
 });
 
-const zcoolKuaiLe = ZCOOL_KuaiLe({
-  variable: "--font-zcool-kuaile",
-  weight: "400",
-  display: "swap",
-});
-
 const fredoka = Fredoka({
   variable: "--font-fredoka",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600"],
   display: "swap",
 });
 
 const nunito = Nunito({
   variable: "--font-nunito",
-  weight: ["400", "600", "700"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
@@ -60,9 +54,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`${notoSansSC.variable} ${zcoolKuaiLe.variable} ${fredoka.variable} ${nunito.variable} antialiased`} suppressHydrationWarning>
+    <html lang="zh-CN" className={`${notoSansSC.variable} ${fredoka.variable} ${nunito.variable} antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <noscript>
+          <style dangerouslySetInnerHTML={{ __html: '.fade-in{opacity:1 !important;transform:none !important}' }} />
+        </noscript>
       </head>
       <body className="min-h-screen font-sans bg-bg text-text-dark">
         <a
